@@ -1,10 +1,10 @@
 # Tolfx Stats
 
-Version: 1.0.0
-Author: Tolfx < Matteus >
-Description: Stuff for my own kek
+Version: 1.0.0 <br/>
+Author: Tolfx < Matteus > <br/>
+Description: Stuff for my own kek <br/>
 
-# Ideas 
+# Stuff to do 
 - [ ] Add database
 - [ ] Add baught stuff
     - [ ] Serial number
