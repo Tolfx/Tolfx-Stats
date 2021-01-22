@@ -18,6 +18,10 @@ Description: Stuff for my own kek <br/>
     - [ ] Who?
     - [ ] Modell name
     - [ ] etc 
-- [ ] Add secure login (Only 1 user)
+- [ ] Add IP-Adresses I've used.
+    - [ ] IP
+    - [ ] Hostname
+    - [ ] Type
+- [X] Add secure login (Only 1 user)
 - [X] Custom logging system
-- [ ] If no Admin user make a setup to create one.
+- [X] If no Admin user make a setup to create one.
