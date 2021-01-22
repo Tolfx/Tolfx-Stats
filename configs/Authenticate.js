@@ -17,5 +17,18 @@ module.exports = {
                 next();
             }
         });
+    },
+
+    setGeneral: (req, res, next) => {
+        let data = {};
+
+        if(req.isAuthenticated()) {
+            data.isAuth = true;
+        } else {
+            data.isAuth = false;
+        }
+
+        res.general = data;
+        next();
     }
 }
