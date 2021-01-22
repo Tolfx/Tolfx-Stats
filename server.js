@@ -13,6 +13,8 @@ const log = require("./lib/Loggers");
 
 const app = express();
 
+require("./configs/Passport")(passport);
+
 mongoose.connect(process.env.MONGODB_NAV, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -74,5 +76,5 @@ const PORT = 5000;
 app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
 app.get('*', (req, res) => {
-res.status(404).render('notFound');
+res.status(404).render('partials/notFound');
 });
