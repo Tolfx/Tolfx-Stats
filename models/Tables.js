@@ -5,6 +5,12 @@ const Table = new mongoose.Schema({
         type: String,
         required: true
     },
+
+    rows: {
+        type: Array,
+        required: true
+    },
+
     createdAt: {
         type: Date,
         default: Date.now,
@@ -18,10 +24,17 @@ const TableData = new mongoose.Schema({
         type: Array,
         required: true
     },
+
+    tableRow: {
+        type: String,
+        required: true
+    },
+
     tableConnectId: {
         type: String,
         required: true
     },
+
     createdAt: {
         type: Date,
         default: Date.now
