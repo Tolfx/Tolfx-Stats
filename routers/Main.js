@@ -4,18 +4,22 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/User');
 const log = require("../lib/Loggers");
-const { checkSetup, ensureIsLoggedIn } = require("../configs/Authenticate");
+const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
 
-router.get("/", checkSetup, ensureIsLoggedIn, (req, res) => {
-  res.render("home");
+router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+  res.render("home", {
+    general: res.general
+  });
 });
 
-router.get("/setup", (req, res) => {
+router.get("/setup", setGeneral, (req, res) => {
   User.findOne({ username: "admin" }).then(u => {
     if(u) {
       return res.redirect("back");
     } else {
-      res.render("partials/setup");
+      res.render("partials/setup", {
+        general: res.general
+      });
     }
   });
 });
@@ -66,11 +70,13 @@ router.post("/setup", (req, res) => {
 
 //Login route
 router.get('/login', checkSetup, (req, res) => {
-  res.render('login');
+  res.render('login', {
+    general: res.general
+  });
 });
 
 // Login
-router.post('/login', checkSetup, (req, res, next) => {
+router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
