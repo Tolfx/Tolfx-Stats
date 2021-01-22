@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="card shadow mt-5 p-3">
+        <div class="alert alert-warning" role="alert">
+            To continue, please insert a admin password for default login, and an email.
+        </div>
+        <form action="/setup" method="post">
+            <div class="card-body rounded">
+                <div class="form m-2">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" class="form-control" id="email" placeholder="Email">
+                </div>
+                <div class="form m-2">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" class="form-control" id="password1" placeholder="Password">
+                </div>
+                <div class="form m-2">
+                    <label for="password2">Repeat password</label>
+                    <input type="password" name="password2" class="form-control" id="password2" placeholder="Repeat password">
+                </div>
+            </div>
+            <button class="btn btn-primary rounded mt-1" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
