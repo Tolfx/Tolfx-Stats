@@ -1,0 +1,33 @@
+<div class="container bg-primary rounded p-3 mt-5">
+    <form action="/table/create" method="post">
+        <div class="form-group">
+            <label for="exampleInputEmail1">Table name</label>
+            <input required name="tableName" class="form-control" placeholder="Table name">
+        </div>
+        <div id="appendRow" class="bg-secondary p-2 rounded ">
+            <h1 class="text-center">Rows</h1>
+            <a id="addRow" class="btn btn-success btn-block">Add new row</a>
+            <div id="row" class="form-group">
+                <label for="exampleInputPassword1">Row name</label>
+                <input required name="row" class="form-control">
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+    </form>
+</div>
+
+<script>
+    let addRow = document.getElementById("addRow")
+    let appendRow = document.getElementById("appendRow");
+    let count = 1;
+    addRow.addEventListener("click", () => {
+        let newRow = document.createElement("div");
+        newRow.innerHTML = 
+        `<div id="row${count}" class="form-group">
+            <label for="exampleInputPassword1">Row name</label>
+            <input name="row" class="form-control">
+        </div>`
+        appendRow.appendChild(newRow);
+        count++
+    });
+</script>
