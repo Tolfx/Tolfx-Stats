@@ -66,12 +66,12 @@ app.use(function (req, res, next) {
 });
 
 //Routers goes here
-
+app.use("/table", require("./routers/Table"));
 
 //This route has to be on the lowest, otherwise epic fail.
 app.use("/", require("./routers/Main"));
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
