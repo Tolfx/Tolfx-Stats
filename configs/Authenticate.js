@@ -5,7 +5,7 @@ module.exports = {
         }
 
         req.flash("error_msg", "Please login to view this.");
-        res.redirect("back");
+        res.redirect("/login");
     },
 
     checkSetup: (req, res, next) => {
