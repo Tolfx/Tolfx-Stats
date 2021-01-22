@@ -25,3 +25,4 @@ Description: Stuff for my own kek <br/>
 - [X] Add secure login (Only 1 user)
 - [X] Custom logging system
 - [X] If no Admin user make a setup to create one.
+- [ ] When adding a new row, make it possible to remove it as well...
