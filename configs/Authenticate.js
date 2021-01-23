@@ -1,4 +1,5 @@
 let { TableData, Tables } = require("../models/Tables");
+let Notis = require("../models/Notis");
 
 module.exports = {
     ensureIsLoggedIn: (req, res, next) => {
@@ -30,7 +31,9 @@ module.exports = {
             data.isAuth = false;
         }
 
-        data.tables = await Tables.find();
+        data.tables = await Tables.find() ? await Tables.find() : [];
+
+        data.notis = await Notis.find() ? await Notis.find() : [];
 
         res.general = data;
         next();
