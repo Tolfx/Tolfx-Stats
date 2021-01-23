@@ -1,7 +1,8 @@
 <div class="container">
     <% if (tables.length > 0) { %>
         <h1 class="text-center mt-5">Tables</h1>
-        <div class="bg-primary rounded p-2">
+        <a class="btn btn-block btn-warning" href="/table/create">Create new table</a>
+        <div class="bg-primary rounded p-2 mt-2">
             <% for( let i = 0; i < tables.length; i++ ) { %>
                 <a href="/table/view/<%= tables[i]._id %>" class="btn btn-success btn-block m-1"><%= tables[i].tableName %></a>    
             <% } %>

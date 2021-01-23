@@ -2,6 +2,7 @@
     <h2 class="text-center mt-5"><%= _table.tableName %></h2>
     <div class="shadow p-3 rounded">
     <a href="/table/add/<%= _table._id %>" class="btn btn-primary">Create new data</a>
+    <a href="/table/edit/table/<%= _table._id %>" class="btn btn-primary">Edit table</a>
     <table class="table rounded shadow mt-3">
         <thead class="thead-dark">
             <tr>
@@ -14,7 +15,7 @@
         <tbody>
             <% for( let i = 0; i < table.length; i++ ) { %>
                 <tr>
-                    <th scope="row"><%= i+1 %></th>
+                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="#">Remove</a></th>
                     <% table[i].tableData.forEach(td => { %>
                         <td><%= td.value %></td>
                     <% }) %>
