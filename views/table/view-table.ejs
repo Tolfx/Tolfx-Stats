@@ -16,7 +16,7 @@
         <tbody>
             <% for( let i = 0; i < table.length; i++ ) { %>
                 <tr>
-                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="/table/remove/row/<%= table[i]._id %>">Remove</a></th>
+                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="#" onClick="removeRow('<%= table[i]._id %>')" id="removeRow">Remove</a></th>
                     <% table[i].tableData.forEach(td => { %>
                         <td><%= td.value %></td>
                     <% }) %>
@@ -26,8 +26,7 @@
       </table>
     </div>
 
-
-    <!-- Modal -->
+    <!-- Modal for remove table -->
     <div class="modal fade" id="removeTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -47,4 +46,34 @@
         </div>
         </div>
     </div>
+
+    <!-- Modal for remove row -->
+    <div id="divRemoveModal"></div>
+    <script>
+        function removeRow(rowId) {
+        document.querySelector("#divRemoveModal").innerHTML = `<div class="modal fade" id="removeRowModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            Are you sure you want to remove this row?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <a href="/table/remove/row/${rowId}" type="button" class="btn btn-danger">Submit</a>
+            </div>
+        </div>
+        </div>
+    </div>`
+        $(document).ready(function(){
+            $("#removeRowModal").modal('show');
+        });
+
+        };
+    </script>
 </div>
