@@ -155,6 +155,59 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
     });
 });
 
+router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    let tableId = req.params.table_id;
+    Tables.findOne({ _id: tableId }).then(table => {
+        if(table) {
+            res.render("table/edit-table", {
+                general: res.general,
+                table: table
+            });
+        } else {
+            res.redirect("back");
+        }
+    });
+});
+
+router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    let tableId = req.params.table_id;
+    Tables.findOne({ _id: tableId }).then(table => {
+        if(table) {
+            let OLD_TableName = table.tableName;
+            let NEW_TableName = req.body.tableName;
+
+            if(OLD_TableName != NEW_TableName) {
+                table.tableName = NEW_TableName;
+            }
+
+            let OLD_Rows = table.rows[0];
+            let NEW_Rows = req.body.row;
+
+            if(OLD_Rows != NEW_Rows) {
+                table.rows = [NEW_Rows];
+            }
+
+            table.save().then(newT => {
+                req.flash("succes_msg", "Succesfully changed table");
+                res.redirect("back");
+            }).catch(e => {
+                log.error(e);
+                res.redirect("back");
+            })
+        } else {
+            res.redirect("back");
+        }
+    });
+});
+
+router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    
+});
+
+router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    
+});
+
 router.post("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
 
 });
