@@ -2,10 +2,14 @@
     <form action="/table/edit/row/<%= row._id %>" method="post">
         <div id="appendRow" class="bg-secondary p-2 rounded ">
             <h1 class="text-center">Rows</h1>
-            <% for( let i = 0; i < row.tableData.length; i++ ) { %>
+            <% for( let i = 0; i < table.rows[0].length; i++ ) { %>
                 <div id="row" class="form-group">
-                    <label><%= row.tableData[i].row %></label>
-                    <input value="<%= row.tableData[i].value %>" required name="row" class="form-control">
+                    <label><%= table.rows[0][i] %></label>
+                    <% if (row.tableData[i]) { %>
+                        <input value="<%= row.tableData[i].value %>" required name="row" class="form-control">
+                    <% } else {%>
+                        <input value="" required name="row" class="form-control">
+                    <% } %>  
                 </div>
             <% } %>
         </div>
