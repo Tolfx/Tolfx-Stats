@@ -3,6 +3,7 @@
     <div class="shadow p-3 rounded">
     <a href="/table/add/<%= _table._id %>" class="btn btn-primary">Create new data</a>
     <a href="/table/edit/table/<%= _table._id %>" class="btn btn-primary">Edit table</a>
+    <button class="text-right btn btn-danger" data-toggle="modal" data-target="#removeTable">Remove table</button>
     <table class="table rounded shadow mt-3">
         <thead class="thead-dark">
             <tr>
@@ -15,7 +16,7 @@
         <tbody>
             <% for( let i = 0; i < table.length; i++ ) { %>
                 <tr>
-                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="#">Remove</a></th>
+                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="/table/remove/row/<%= table[i]._id %>">Remove</a></th>
                     <% table[i].tableData.forEach(td => { %>
                         <td><%= td.value %></td>
                     <% }) %>
@@ -23,5 +24,27 @@
             <% } %>
         </tbody>
       </table>
+    </div>
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="removeTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            Are you sure you want to remove this table?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <a href="/table/remove/table/<%= _table._id %>" type="button" class="btn btn-danger">Submit</a>
+            </div>
+        </div>
+        </div>
     </div>
 </div>
