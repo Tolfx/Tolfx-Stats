@@ -1,3 +1,5 @@
+let { TableData, Tables } = require("../models/Tables");
+
 module.exports = {
     ensureIsLoggedIn: (req, res, next) => {
         if (req.isAuthenticated()) {
@@ -19,7 +21,7 @@ module.exports = {
         });
     },
 
-    setGeneral: (req, res, next) => {
+    setGeneral: async (req, res, next) => {
         let data = {};
 
         if(req.isAuthenticated()) {
@@ -27,6 +29,8 @@ module.exports = {
         } else {
             data.isAuth = false;
         }
+
+        data.tables = await Tables.find();
 
         res.general = data;
         next();
