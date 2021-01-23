@@ -44,16 +44,17 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
             if(typeof row != "array") {
                 A_Dummy.push(row);
             }
-    
+            log.debug(row);
             new Tables({
                 tableName,
                 rows: typeof row === "array" ? row : A_Dummy
             }).save().then(t => {
                 log.verbos("Created a new table with tableName: " + tableName);
                 req.flash("succes_msg", "Table created!");
-                res.redirect("back");
+                res.redirect(`/table/view/${t._id}`);
             }).catch(e => {
                 log.error(e);
+                req.flash("error_msg", "An error appeared.. please try again.");
                 res.redirect("back");
             });
         } else {
@@ -98,7 +99,10 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
                     let indexOfBody = reqBodyArray.indexOf(table.rows[0][i]);
                     
                     if(indexOfBody > -1) {
-                        final.push(reqBodyValues[indexOfBody]);
+                        final.push({
+                            value: reqBodyValues[indexOfBody],
+                            row: table.rows[0][i]
+                        });
                     }
                 }
 
@@ -135,7 +139,8 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
 
                 res.render("table/view-table", {
                     general: res.general,
-                    table: t ? t : A_FakeData
+                    table: t ? t : A_FakeData,
+                    _table: table
                 });
             }).catch(e => {
                 log.error(e);
@@ -148,6 +153,14 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
         log.error(e);
         res.redirect("back");
     });
+});
+
+router.post("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+
+});
+
+router.post("/remove/table/data/:table_data_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    
 });
 
 module.exports = router;
