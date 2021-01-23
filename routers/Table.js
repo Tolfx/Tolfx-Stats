@@ -193,6 +193,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
     
                                 if(i+1 == t[x].tableData.length) {
                                     log.debug("Saving..");
+                                    t[x].markModified('tableData');
                                     t[x].save().catch(e => log.error(e));
                                 }
                             }
@@ -242,8 +243,8 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                 for (let i = 0; i < OLD_ROW.length; i++) {
                     row.tableData[i].value = NEW_ROW[i];
                     if(i+1 == OLD_ROW.length) {
+                        row.markModified('tableData');
                         row.save().then(r => {
-                            log.debug(r)
                             req.flash("succes_msg", "Succesfully changed row")
                             return res.redirect("back");
                         }).catch(e => {
@@ -263,12 +264,20 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
     });
 });
 
-router.post("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-
+router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    TablesData.deleteOne({ _id: req.params.row_id }).then(r => {
+        req.flash("succes_msg", "Removed the row");
+        return res.redirect("back");
+    });
 });
 
-router.post("/remove/table/data/:table_data_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    
+router.get("/remove/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    Tables.deleteOne({ _id: req.params.table_id }).then(t => {
+        TablesData.deleteMany({ tableConnectId: req.params.table_id }).then(r => {
+            req.flash("succes_msg", "Removed table and all data..");
+            return res.redirect("/table");
+        });
+    });
 });
 
 module.exports = router;
