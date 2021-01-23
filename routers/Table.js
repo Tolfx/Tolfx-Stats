@@ -137,21 +137,21 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
             TablesData.find({ tableConnectId: table._id }).then(t => {
                 let A_FakeData = [];
 
-                res.render("table/view-table", {
+                return res.render("table/view-table", {
                     general: res.general,
                     table: t ? t : A_FakeData,
                     _table: table
                 });
             }).catch(e => {
                 log.error(e);
-                res.redirect("back");
+                return res.redirect("back");
             });
         } else {
-            res.redirect("back");
+            return res.redirect("back");
         }
     }).catch(e => {
         log.error(e);
-        res.redirect("back");
+        return res.redirect("back");
     });
 });
 
@@ -159,12 +159,12 @@ router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (r
     let tableId = req.params.table_id;
     Tables.findOne({ _id: tableId }).then(table => {
         if(table) {
-            res.render("table/edit-table", {
+            return res.render("table/edit-table", {
                 general: res.general,
                 table: table
             });
         } else {
-            res.redirect("back");
+            return res.redirect("back");
         }
     });
 });
@@ -185,27 +185,82 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
 
             if(OLD_Rows != NEW_Rows) {
                 table.rows = [NEW_Rows];
+                TablesData.find({ tableConnectId: table._id }).then(t => {
+                    if(t) {
+                        for (let x = 0; x < t.length; x++) {
+                            for (let i = 0; i < t[x].tableData.length; i++) {
+                                t[x].tableData[i].row = NEW_Rows[i]
+    
+                                if(i+1 == t[x].tableData.length) {
+                                    log.debug("Saving..");
+                                    t[x].save().catch(e => log.error(e));
+                                }
+                            }
+                        }
+                    }
+                });
             }
 
             table.save().then(newT => {
                 req.flash("succes_msg", "Succesfully changed table");
-                res.redirect("back");
+                return res.redirect("back");
             }).catch(e => {
                 log.error(e);
-                res.redirect("back");
+                return res.redirect("back");
             })
         } else {
-            res.redirect("back");
+            return res.redirect("back");
         }
     });
 });
 
 router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    
+    let rowDataId = req.params.row_id;
+    TablesData.findOne({ _id: rowDataId }).then(row => {
+        if(row) {
+            return res.render("table/edit-row", {
+                general: res.general,
+                row: row
+            });
+        } else {
+            return res.redirect("back");
+        }
+    }).catch(e => {
+        log.error(e);
+        return res.redirect("back");
+    });
 });
 
 router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    
+    let rowDataId = req.params.row_id;
+    TablesData.findOne({ _id: rowDataId }).then(row => {
+        if(row) {
+            let OLD_ROW = row.tableData.map(e => e.value);
+            let NEW_ROW = req.body.row;
+
+            if(OLD_ROW != NEW_ROW) {
+                for (let i = 0; i < OLD_ROW.length; i++) {
+                    row.tableData[i].value = NEW_ROW[i];
+                    if(i+1 == OLD_ROW.length) {
+                        row.save().then(r => {
+                            log.debug(r)
+                            req.flash("succes_msg", "Succesfully changed row")
+                            return res.redirect("back");
+                        }).catch(e => {
+                            log.error(e);
+                            req.flash("error_msg", "Something went wrong.. try again.");
+                            return res.redirect("back");
+                        });
+                    }
+                }
+            }
+        } else {
+            return res.redirect("back");
+        }
+    }).catch(e => {
+        log.error(e);
+        return res.redirect("back");
+    });
 });
 
 router.post("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
