@@ -67,6 +67,7 @@ app.use(function (req, res, next) {
 
 //Routers goes here
 app.use("/table", require("./routers/Table"));
+app.use("/notis", require("./routers/Notis"));
 
 //This route has to be on the lowest, otherwise epic fail.
 app.use("/", require("./routers/Main"));
