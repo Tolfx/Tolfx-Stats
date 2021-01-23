@@ -76,5 +76,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
 app.get('*', (req, res) => {
-res.status(404).render('partials/notFound');
+    res.status(404).render('partials/notFound');
 });

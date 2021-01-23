@@ -69,7 +69,7 @@ router.post("/setup", (req, res) => {
 });
 
 //Login route
-router.get('/login', checkSetup, (req, res) => {
+router.get('/login', checkSetup, setGeneral, (req, res) => {
   res.render('login', {
     general: res.general
   });

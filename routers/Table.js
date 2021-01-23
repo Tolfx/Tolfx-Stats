@@ -44,10 +44,10 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
             if(typeof row != "array") {
                 A_Dummy.push(row);
             }
-            log.debug(row);
+
             new Tables({
                 tableName,
-                rows: typeof row === "array" ? row : A_Dummy
+                rows: typeof row === "array" ? row : [A_Dummy]
             }).save().then(t => {
                 log.verbos("Created a new table with tableName: " + tableName);
                 req.flash("succes_msg", "Table created!");
@@ -59,8 +59,9 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
             });
         } else {
 
-            //Change later to edit when added
-            res.redirect(`/table/view/${table._id}`);
+            //Change later to edit when added /Done
+            req.flash("error_msg", "Table already exists.");
+            res.redirect(`/table/edit/table/${table._id}`);
         }
     }).catch(e => {
         log.error(e);
