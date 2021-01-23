@@ -218,11 +218,12 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
 
 router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let rowDataId = req.params.row_id;
-    TablesData.findOne({ _id: rowDataId }).then(row => {
+    TablesData.findOne({ _id: rowDataId }).then(async row => {
         if(row) {
             return res.render("table/edit-row", {
                 general: res.general,
-                row: row
+                row: row,
+                table: await Tables.findOne({ _id: row.tableConnectId })
             });
         } else {
             return res.redirect("back");
@@ -239,9 +240,14 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
         if(row) {
             let OLD_ROW = row.tableData.map(e => e.value);
             let NEW_ROW = req.body.row;
-
             if(OLD_ROW != NEW_ROW) {
-                for (let i = 0; i < OLD_ROW.length; i++) {
+                //If new rows..
+                if(NEW_ROW.length > OLD_ROW.length) {
+                    log.debug("New row added")
+                    row.tableData.push({value: null, row: null});
+                }
+
+                for (let i = 0; i < NEW_ROW.length; i++) {
                     row.tableData[i].value = NEW_ROW[i];
                     if(i+1 == OLD_ROW.length) {
                         row.markModified('tableData');
