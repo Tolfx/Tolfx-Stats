@@ -70,7 +70,7 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
         if(n) {
             let { color, information, name, active } = req.body;
 
-            if(!color || !information || !name || !active) {
+            if(!color || !information || !name) {
                 req.flash("error_msg", "Something was missing, please try again");
                 return res.redirect("back");
             }
