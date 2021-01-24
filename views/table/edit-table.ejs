@@ -7,10 +7,10 @@
         <div id="appendRow" class="bg-secondary p-2 rounded ">
             <h1 class="text-center">Rows</h1>
             <a id="addRow" class="btn btn-success btn-block">Add new row</a>
-            <% for( let i = 0; i < table.rows[0].length; i++ ) { %>
+            <% for( let i = 0; i < table.rows.length; i++ ) { %>
                 <div id="row" class="form-group">
                     <label for="exampleInputPassword1">Row name</label>
-                    <input value="<%= table.rows[0][i] %>" required name="row" class="form-control">
+                    <input value="<%= table.rows[i] %>" required name="row" class="form-control">
                 </div>
             <% } %>
         </div>

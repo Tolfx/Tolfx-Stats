@@ -4,21 +4,24 @@
     <a href="/table/add/<%= _table._id %>" class="btn btn-primary">Create new data</a>
     <a href="/table/edit/table/<%= _table._id %>" class="btn btn-primary">Edit table</a>
     <button class="text-right btn btn-danger" data-toggle="modal" data-target="#removeTable">Remove table</button>
-    <table class="table rounded shadow mt-3">
+    <table class="table rounded shadow table-bordered table-striped">
+        <div class="input-group-sm mt-4">
+            <input id="searchTable" class="form-control mr-sm-2 " type="search" placeholder="Search" aria-label="Search">
+        </div>
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
-                <% _table.rows[0].forEach(t => { %>
+                <% _table.rows.forEach(t => { %>
                     <th scope="col"><%= t %></th>
                 <% }) %>
             </tr>
             </thead>
-        <tbody>
+        <tbody id="myTable">
             <% for( let i = 0; i < table.length; i++ ) { %>
                 <tr>
-                    <th><a href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="#" onClick="removeRow('<%= table[i]._id %>')" id="removeRow">Remove</a></th>
+                    <th><a style="color: rgb(133, 231, 133)" href="/table/edit/row/<%= table[i]._id %>">Edit</a> | <a href="#" style="color: rgb(235, 102, 102)" onClick="removeRow('<%= table[i]._id %>')" id="removeRow">Remove</a></th>
                     <% table[i].tableData.forEach(td => { %>
-                        <td><%= td.value %></td>
+                        <td><%- td.valueS %></td>
                     <% }) %>
                 </tr>
             <% } %>
@@ -75,5 +78,16 @@
         });
 
         };
+    </script>
+
+    <script>
+        $(document).ready(function(){
+            $("#searchTable").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
     </script>
 </div>

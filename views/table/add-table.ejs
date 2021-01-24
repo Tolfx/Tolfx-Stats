@@ -3,10 +3,10 @@
     <form action="/table/add/<%= table._id %>" method="post">
         <div id="appendRow" class="bg-secondary p-2 rounded ">
             <h1 class="text-center">Rows</h1>
-            <% for( let i = 0; i < table.rows[0].length; i++ ) { %>
+            <% for( let i = 0; i < table.rows.length; i++ ) { %>
                 <div id="row" class="form-group">
-                    <label for="exampleInputPassword1"><%= table.rows[0][i] %></label>
-                    <input required name="<%= table.rows[0][i] %>" class="form-control">
+                    <label for="exampleInputPassword1"><%= table.rows[i] %></label>
+                    <input required name="<%= table.rows[i] %>" class="form-control">
                 </div>
             <% } %>
         </div>

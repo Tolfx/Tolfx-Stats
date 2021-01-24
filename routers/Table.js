@@ -6,6 +6,10 @@ const User = require('../models/User');
 const log = require("../lib/Loggers");
 const { Tables, TablesData } = require("../models/Tables");
 const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
+const marked = require('marked');
+const createDomPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const dompurify = createDomPurify(new JSDOM().window);
 
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Tables.find().then(t => {
@@ -35,22 +39,22 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let { tableName, row } = req.body;
     Tables.findOne({ tableName }).then(table => {
         if(!table) {
-            let A_Dummy = [];
+
             if(!tableName || !row) {
                 req.flash("error_msg", "Please add a table name and row");
                 res.redirect("back");
             }
     
             if(typeof row != "array") {
-                A_Dummy.push(row);
+                row = [row];
             }
 
             new Tables({
                 tableName,
-                rows: typeof row === "array" ? row : [A_Dummy]
+                rows: row
             }).save().then(t => {
                 log.verbos("Created a new table with tableName: " + tableName);
-                req.flash("succes_msg", "Table created!");
+                req.flash("success_msg", "Table created!");
                 res.redirect(`/table/view/${t._id}`);
             }).catch(e => {
                 log.error(e);
@@ -94,21 +98,22 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
             let reqBodyArray = Object.keys(reqBody);
             let reqBodyValues = Object.values(reqBody);
             let final = [];
-            for(let i = 0; i < table.rows[0].length; i++) {
-                if(reqBody.hasOwnProperty(table.rows[0][i])) {
-                    log.debug("Found match on " + table.rows[0][i]);
-                    let indexOfBody = reqBodyArray.indexOf(table.rows[0][i]);
+            for(let i = 0; i < table.rows.length; i++) {
+                log.debug("Looking for items..");
+                if(reqBody.hasOwnProperty(table.rows[i])) {
+                    log.debug("Found match on " + table.rows[i]);
+                    let indexOfBody = reqBodyArray.indexOf(table.rows[i]);
                     
                     if(indexOfBody > -1) {
                         final.push({
                             value: reqBodyValues[indexOfBody],
-                            row: table.rows[0][i]
+                            valueS: dompurify.sanitize(marked(reqBodyValues[indexOfBody])),
+                            row: table.rows[i]
                         });
                     }
                 }
 
-                if(i+1 == table.rows[0].length) {
-                    log.debug(final + " <-- Final");
+                if(i+1 == table.rows.length) {
                     new TablesData({
                         tableData: final,
                         tableRow: table.tableName,
@@ -181,11 +186,11 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
                 table.tableName = NEW_TableName;
             }
 
-            let OLD_Rows = table.rows[0];
+            let OLD_Rows = table.rows;
             let NEW_Rows = req.body.row;
 
             if(OLD_Rows != NEW_Rows) {
-                table.rows = [NEW_Rows];
+                table.rows = NEW_Rows;
                 TablesData.find({ tableConnectId: table._id }).then(t => {
                     if(t) {
                         for (let x = 0; x < t.length; x++) {
@@ -244,15 +249,16 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                 //If new rows..
                 if(NEW_ROW.length > OLD_ROW.length) {
                     log.debug("New row added")
-                    row.tableData.push({value: null, row: null});
+                    row.tableData.push({value: null, row: null, valueS: null});
                 }
 
                 for (let i = 0; i < NEW_ROW.length; i++) {
                     row.tableData[i].value = NEW_ROW[i];
+                    row.tableData[i].valueS = dompurify.sanitize(marked(NEW_ROW[i]));
                     if(i+1 == OLD_ROW.length) {
                         row.markModified('tableData');
                         row.save().then(r => {
-                            req.flash("succes_msg", "Succesfully changed row")
+                            req.flash("success_msg", "Succesfully changed row")
                             return res.redirect("back");
                         }).catch(e => {
                             log.error(e);
