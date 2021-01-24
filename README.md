@@ -6,18 +6,18 @@ Description: Stuff for my own kek <br/>
 
 # Stuff to do 
 - [X] Add database
-- [ ] Add baught stuff
-    - [ ] Serial number
-    - [ ] Date
-    - [ ] Who?
-    - [ ] Modell name
-    - [ ] etc
-- [ ] Add items I own
-    - [ ] Serial number
-    - [ ] Date
-    - [ ] Who?
-    - [ ] Modell name
-    - [ ] etc 
+- [X] Add baught stuff
+    - [X] Serial number
+    - [X] Date
+    - [X] Who?
+    - [X] Modell name
+    - [X] etc
+- [X] Add items I own
+    - [X] Serial number
+    - [X] Date
+    - [X] Who?
+    - [X] Modell name
+    - [X] etc 
 - [X] Add IP-Adresses I've used.
     - [X] IP
     - [X] Hostname
@@ -26,7 +26,7 @@ Description: Stuff for my own kek <br/>
 - [X] Custom logging system
 - [X] If no Admin user make a setup to create one.
 - [ ] When adding a new row, make it possible to remove it as well...
-- [ ] Remove tables.
+- [X] Remove tables.
 - [X] Remove row data.
 - [X] Edit table data.
-- [ ] Edit tables.
+- [X] Edit tables.
