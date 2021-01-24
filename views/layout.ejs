@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://bootswatch.com/4/slate/bootstrap.min.css">
-    <link rel="stylesheet" href="./css/notis.css">
+    <link rel="stylesheet" href="/css/notis.css">
     <title>Tolfx Stats</title>
 </head>
 <body class="text-white">
@@ -15,12 +15,42 @@
 
       <% if (general.notis.length > 0) { %>
         <% general.notis.forEach(notis => { %>
+          <% if (notis.active) { %>
           <div class="notis" id="<%= notis._id %>">
-            <div class="notisHeader" id="<%= notis._id %>Header">Test</div>
-            <%- notis.informationSani %> 
+            <div class="notisHeader" id="<%= notis._id %>Header"><%= notis.name %> 
+              <button class="float-right btn-sm align-middle" id="close<%= notis._id %>">+</button>
+              <a class="float-right btn bg-warning text-white btn-sm align-middle" href="/notis/edit/<%= notis._id %>">Edit</a>
+            </div>
+            <div id="boxNotis" class="boxNotis<%= notis._id %>" style="color: black;">
+              <%- notis.informationSani %> 
+            </div>
           </div>
 
           <script>
+                let boxNotis = document.querySelector(".boxNotis<%= notis._id %>");
+                <% if (notis.closed) { %>
+                  boxNotis.style.display = "none";
+                <% } else { %>
+                  boxNotis.style.display = "block";
+                <% } %>
+            $("#close<%= notis._id %>").click(function(){
+                if($(this).html() == "-"){
+                    $(this).html("+");
+                }
+                else{
+                    $(this).html("-");
+                }
+
+                if (boxNotis.style.display === "block") {
+                  boxNotis.style.display = "none";
+                  fetch("/notis/save/<%= notis._id %>/closed/true", {method: "POST"});
+                } else {
+                  fetch("/notis/save/<%= notis._id %>/closed/false", {method: "POST"});
+                  boxNotis.style.display = "block";
+                }
+            });
+
+
             function dragElement(elmnt, pos1, pos2) {
               let pos3 = 0, pos4 = 0;
               elmnt.style.top = (pos2) + "px";
@@ -59,16 +89,14 @@
 
               function closeDragElement() {
                 /* stop moving when mouse button is released:*/
+                fetch("/notis/save/<%= notis._id %>/pos/"+(elmnt.offsetLeft - pos1)+"/"+(elmnt.offsetTop - pos2), { method: "POST"});
                 document.onmouseup = null;
                 document.onmousemove = null;
               }
-
-              setInterval(() => {
-                fetch("/notis/save/<%= notis._id %>/pos/"+(elmnt.offsetLeft - pos1)+"/"+(elmnt.offsetTop - pos2), { method: "POST"});
-              }, 10000)
             }
             dragElement(document.getElementById("<%= notis._id %>"), "<%= notis.posX %>", "<%= notis.posY %>")
           </script>
+          <% } %>
         <% }) %>
       <% } %>
 
