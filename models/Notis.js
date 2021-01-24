@@ -40,6 +40,16 @@ const NotisSchema = new mongoose.Schema({
         required: true,
     },
 
+    active: {
+        type: Boolean,
+        default: true
+    },
+
+    closed: {
+        type: Boolean,
+        default: false
+    },
+
     createdAt: {
         type: Date,
         default: Date.now,
