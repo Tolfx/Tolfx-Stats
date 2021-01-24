@@ -1,0 +1,24 @@
+<div class="container bg-primary rounded p-3 mt-5">
+    <form action="/notis/edit/<%= notis._id %>" method="post">
+        <div class="form-group">
+            <label>Notis name</label>
+            <input required value="<%= notis.name %>" name="name" class="form-control" placeholder="Table name">
+        </div>
+        <div class="form-group">
+            <label>Color</label>
+            <input value="<%= notis.color %>" required name="color" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Information</label>
+            <textarea required name="information" rows="3" class="form-control"><%= notis.information %></textarea>
+        </div>
+        <div class="custom-control custom-switch">
+            <input <% if (notis.active) { %>
+                checked
+            <% } %> type="checkbox" name="active" value="0" class="custom-control-input" id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1">Enable this notis?</label>
+        </div>
+        <button type="submit" class="btn btn-primary mt-2">Submit</button>
+        <a href="">Delete</a>
+    </form>
+</div>
