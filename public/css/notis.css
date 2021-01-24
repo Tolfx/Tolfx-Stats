@@ -2,21 +2,21 @@
     position: absolute;
     z-index: 9;
     width: 400px;
-    background-color: #edf053;
-    border: 2px solid #4eec3f;
     word-break: break-all;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    border-radius: 7px;
 }
   
 .notisHeader {
     padding: 10px;
+    border-radius: 3px;
     cursor: move;
     z-index: 10;
-    
-    background-color: #d4d64b;
     color: rgb(34, 33, 33);
 }
 
 #boxNotis {
     max-height: 350px;
     overflow: auto;
+    padding: 5px;
 }
