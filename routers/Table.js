@@ -44,10 +44,6 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
                 req.flash("error_msg", "Please add a table name and row");
                 res.redirect("back");
             }
-    
-            if(typeof row != "array") {
-                row = [row];
-            }
 
             new Tables({
                 tableName,
