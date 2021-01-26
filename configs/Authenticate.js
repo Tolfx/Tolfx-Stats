@@ -27,6 +27,14 @@ module.exports = {
 
         if(req.isAuthenticated()) {
             data.isAuth = true;
+
+            if(req.user.role === "admin") {
+                data.isAdmin = true;
+            } else {
+                data.isAdmin = false;
+            }
+
+            data.user = req.user;
         } else {
             data.isAuth = false;
         }
