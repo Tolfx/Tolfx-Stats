@@ -11,6 +11,10 @@ const createDomPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 const dompurify = createDomPurify(new JSDOM().window);
 
+/**
+ * @GET /table
+ * @description Goes to main /table route.
+ */
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Tables.find().then(t => {
         res.render("table/main-table", {
@@ -23,12 +27,20 @@ router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     });
 });
 
+/**
+ * @GET /table/create
+ * @description Goes to /create route to create a new table.
+ */
 router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     res.render("table/create-table", {
         general: res.general
     });
 });
 
+/**
+ * @POST /table/create
+ * @description Creates a new table for the following request { tableName, row[] }
+ */
 router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     /*
         Object: {
@@ -36,6 +48,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
             rows: Array<String>
         }
     */
+
     let { tableName, row } = req.body;
     Tables.findOne({ tableName }).then(table => {
         if(!table) {
@@ -69,6 +82,10 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     });
 });
 
+/**
+ * @GET /table/add/:table_id
+ * @description Goes to the specific table which can later do a post request to create new data.
+ */
 router.get("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let Id = req.params.table_id;
     Tables.findOne({ _id: Id }).then(table => {
@@ -86,22 +103,49 @@ router.get("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res
     });
 });
 
+/**
+ * @POST /table/add/:table_id
+ * @description Adds new data to the specific table, which gets added to the tabledata db.
+ */
 router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+
     let Id = req.params.table_id;
     Tables.findOne({ _id: Id }).then(table => {
         if(table) {
+
+            /*
+            * When the user sends a post request here, we can't be sure to know,
+            * what specific row name will be sent.
+            * Therefor this method is being used.
+            */
+
+            //Get the body from the request.
             let reqBody = req.body;
+
+            //We want to take the keys (aka the row name)
             let reqBodyArray = Object.keys(reqBody);
+
+            //Here we take the value from it, which will be an array according to reqBodyArray.
             let reqBodyValues = Object.values(reqBody);
+
+            //Using this to store the final data.
             let final = [];
             for(let i = 0; i < table.rows.length; i++) {
                 log.debug("Looking for items..");
+
+                //Looking if reqBody has the same property from the table (db)
                 if(reqBody.hasOwnProperty(table.rows[i])) {
                     log.debug("Found match on " + table.rows[i]);
+
+                    //If we succed to find one, we want to know where in the index is at.
                     let indexOfBody = reqBodyArray.indexOf(table.rows[i]);
-                    
+
+                    //If it really existed.. to double check.
                     if(indexOfBody > -1) {
+
+                        //We push it to final[] with different values.
                         final.push({
+                                    //So we take the reqBodyValues and take the index that we got.
                             value: reqBodyValues[indexOfBody],
                             valueS: dompurify.sanitize(marked(reqBodyValues[indexOfBody])),
                             row: table.rows[i]
@@ -132,6 +176,10 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
     });
 });
 
+/**
+ * @GET /table/:table_id
+ * @description Views the specific table, with it specific data.
+ */
 router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let tableId = req.params.table_id;
     Tables.findOne({ _id: tableId }).then(table => {
@@ -157,6 +205,10 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
     });
 });
 
+/**
+ * @GET /table/edit/table/:table_id
+ * @description To edit a tables row or name.
+ */
 router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let tableId = req.params.table_id;
     Tables.findOne({ _id: tableId }).then(table => {
@@ -171,6 +223,10 @@ router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (r
     });
 });
 
+/**
+ * @POST /table/edit/:table_id
+ * @description Edits the tables name or rows.
+ */
 router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let tableId = req.params.table_id;
     Tables.findOne({ _id: tableId }).then(table => {
@@ -195,6 +251,8 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
     
                                 if(i+1 == t[x].tableData.length) {
                                     log.debug("Saving..");
+                                    
+                                    //This .markModified is needed or it gets cucked hard.
                                     t[x].markModified('tableData');
                                     t[x].save().catch(e => log.error(e));
                                 }
@@ -217,6 +275,10 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
     });
 });
 
+/**
+ * @GET /table/edit/:row_id
+ * @description To edit specific rows. 
+ */
 router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let rowDataId = req.params.row_id;
     TablesData.findOne({ _id: rowDataId }).then(async row => {
@@ -235,6 +297,10 @@ router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, 
     });
 });
 
+/**
+ * @POST /table/edit/row/:row_id
+ * @description Edits the specific rows in table.
+ */
 router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let rowDataId = req.params.row_id;
     TablesData.findOne({ _id: rowDataId }).then(row => {
@@ -273,6 +339,10 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
     });
 });
 
+/**
+ * @GET /table/remove/row/:row_id
+ * @description To remove a specific row, that is not needed.. this will be effected in tablesdata.
+ */
 router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     TablesData.deleteOne({ _id: req.params.row_id }).then(r => {
         req.flash("success_msg", "Removed the row");
@@ -280,6 +350,10 @@ router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req
     });
 });
 
+/**
+ * @GET /table/remove/table/:table_id
+ * @description To removes a specific table, and all of is data.
+ */
 router.get("/remove/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Tables.deleteOne({ _id: req.params.table_id }).then(t => {
         TablesData.deleteMany({ tableConnectId: req.params.table_id }).then(r => {
