@@ -57,9 +57,15 @@ const NotisSchema = new mongoose.Schema({
 });
 
 NotisSchema.pre('validate', function (next) {
-  
+    
+
+
     if (this.information) {
-      this.informationSani = dompurify.sanitize(marked(this.information));
+        if(!this.information.includes("<script>")) {
+            this.informationSani = dompurify.sanitize(marked(this.information));
+        } else {
+            this.informationSani = this.information;
+        }
     }
   
     next();
