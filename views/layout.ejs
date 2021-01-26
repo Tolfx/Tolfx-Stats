@@ -10,23 +10,8 @@
 </head>
 <body class="text-white">
     <%- include('./partials/messages') %> 
-
-    <% if (general.isAuth) { %>
-
-      <% if (general.notis.length > 0) { %>
-        <% general.notis.forEach(notis => { %>
-          <% if (notis.active) { %>
-          <div class="notis" id="<%= notis._id %>">
-            <div class="notisHeader" id="<%= notis._id %>Header"><%= notis.name %> 
-              <button class="float-right btn-sm align-middle" id="close<%= notis._id %>">+</button>
-              <a class="float-right btn bg-warning text-white btn-sm align-middle" href="/notis/edit/<%= notis._id %>">Edit</a>
-            </div>
-            <div id="boxNotis" class="boxNotis<%= notis._id %>" style="color: black;">
-              <%- notis.informationSani %> 
-            </div>
-          </div>
-          <script>
-            const pSBC=(p,c0,c1,l)=>{
+    <script>
+                  const pSBC=(p,c0,c1,l)=>{
               let r,g,b,P,f,t,h,i=parseInt,m=Math.round,a=typeof(c1)=="string";
               if(typeof(p)!="number"||p<-1||p>1||typeof(c0)!="string"||(c0[0]!='r'&&c0[0]!='#')||(c1&&!a))return null;
               if(!this.pSBCr)this.pSBCr=(d)=>{
@@ -50,36 +35,54 @@
               if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
               else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
             }
+    </script>
+    <% if (general.isAuth) { %>
 
-            let color = "<%= notis.color %>";
-            let colorDarker = pSBC(-0.5, color);
-            document.querySelector(".notisHeader").style.backgroundColor = colorDarker;
-            document.querySelector(".notis").style.backgroundColor = color;
-                let boxNotis = document.querySelector(".boxNotis<%= notis._id %>");
-                <% if (notis.closed) { %>
-                  boxNotis.style.display = "none";
-                <% } else { %>
-                  boxNotis.style.display = "block";
-                <% } %>
-            $("#close<%= notis._id %>").click(function(){
-                if($(this).html() == "-"){
-                    $(this).html("+");
-                }
-                else{
-                    $(this).html("-");
-                }
+      <% if (general.notis.length > 0) { %>
+        <% general.notis.forEach(notis => { %>
+          <% if (notis.active) { %>
+          <div style="width: <%= notis.width %>px;" class="notis" id="<%= notis._id %>">
+            <div class="notisHeader" id="<%= notis._id %>Header"><%= notis.name %> 
+              <button class="float-right btn-sm align-middle" id="close<%= notis._id %>">+</button>
+              <a class="float-right btn bg-warning text-white btn-sm align-middle" href="/notis/edit/<%= notis._id %>">Edit</a>
+            </div>
+            <div id="boxNotis" style="max-height: <%= notis.height %>px;" class="boxNotis<%= notis._id %>">
+              <%- notis.informationSani %> 
+            </div>
+          </div>
+          
+          <script>
+            let color<%= notis._id %> = "<%= notis.color %>";
+            let colorDarker<%= notis._id %> = pSBC(-0.45, color<%= notis._id %>);
+            document.getElementById("<%= notis._id %>Header").style.backgroundColor = colorDarker<%= notis._id %>;
+            document.getElementById("<%= notis._id %>").style.backgroundColor = color<%= notis._id %>;
+          </script>
+          <script>
+                let boxNotis<%= notis._id %> = document.querySelector(".boxNotis<%= notis._id %>");
+              <% if (notis.closed) { %>
+                boxNotis<%= notis._id %>.style.display = "none";
+              <% } else { %>
+                boxNotis<%= notis._id %>.style.display = "block";
+              <% } %>
+                $("#close<%= notis._id %>").click(function(){
+                  if($(this).html() == "-"){
+                      $(this).html("+");
+                  }
+                  else{
+                      $(this).html("-");
+                  }
 
-                if (boxNotis.style.display === "block") {
-                  boxNotis.style.display = "none";
-                  fetch("/notis/save/<%= notis._id %>/closed/true", {method: "POST"});
-                } else {
-                  fetch("/notis/save/<%= notis._id %>/closed/false", {method: "POST"});
-                  boxNotis.style.display = "block";
-                }
-            });
-
-
-            function dragElement(elmnt, pos1, pos2) {
+                  if (boxNotis<%= notis._id %>.style.display === "block") {
+                    boxNotis<%= notis._id %>.style.display = "none";
+                    fetch("/notis/save/<%= notis._id %>/closed/true", {method: "POST"});
+                  } else {
+                    fetch("/notis/save/<%= notis._id %>/closed/false", {method: "POST"});
+                    boxNotis<%= notis._id %>.style.display = "block";
+                  }
+                });
+          </script>
+          <script>
+                        function dragElement(elmnt, pos1, pos2) {
               let pos3 = 0, pos4 = 0;
               elmnt.style.top = (pos2) + "px";
               elmnt.style.left = (pos1) + "px";
@@ -144,6 +147,7 @@
                           Tables
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="/table/create">Create Table</a>
                             <% general.tables.forEach(t => { %>
                                 <a href="/table/view/<%= t._id %>" class="dropdown-item"><%= t.tableName %></a>
                             <% }) %>
@@ -154,6 +158,7 @@
                         Notis
                       </a>
                       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="/notis/create">Create Notis</a>
                           <% general.notis.forEach(notis => { %>
                               <a href="/notis/edit/<%= notis._id %>" class="dropdown-item"><%= notis.name %></a>
                           <% }) %>
