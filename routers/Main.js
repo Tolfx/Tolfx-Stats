@@ -54,7 +54,7 @@ router.post("/setup", (req, res) => {
                   role: "admin"
                 }).save().then(a => {
                   log.debug("Admin user created for setup");
-                  req.flash("succes_msg", "Admin user has been created!")
+                  req.flash("success_msg", "Admin user has been created!")
                   res.redirect("/login");
                 })
               })

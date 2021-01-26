@@ -205,7 +205,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
             }
 
             table.save().then(newT => {
-                req.flash("succes_msg", "Succesfully changed table");
+                req.flash("success_msg", "Succesfully changed table");
                 return res.redirect("back");
             }).catch(e => {
                 log.error(e);
@@ -275,7 +275,7 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
 
 router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     TablesData.deleteOne({ _id: req.params.row_id }).then(r => {
-        req.flash("succes_msg", "Removed the row");
+        req.flash("success_msg", "Removed the row");
         return res.redirect("back");
     });
 });
@@ -283,7 +283,7 @@ router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req
 router.get("/remove/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Tables.deleteOne({ _id: req.params.table_id }).then(t => {
         TablesData.deleteMany({ tableConnectId: req.params.table_id }).then(r => {
-            req.flash("succes_msg", "Removed table and all data..");
+            req.flash("success_msg", "Removed table and all data..");
             return res.redirect("/table");
         });
     });
