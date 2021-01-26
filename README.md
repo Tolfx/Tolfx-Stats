@@ -30,3 +30,7 @@ Description: Stuff for my own kek <br/>
 - [X] Remove row data.
 - [X] Edit table data.
 - [X] Edit tables.
+- [ ] Add a table where I can check my trains etc
+    - [ ] Time (When it comes)
+    - [ ] Which train 
+    - [ ] Location
