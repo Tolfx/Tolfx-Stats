@@ -26,7 +26,7 @@ router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
 router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Notis.findOne({ name: req.body.name }).then(n => {
         if(!n) {
-            let { name, information, color } = req.body;
+            let { name, information, color, width, height } = req.body;
             if(!name || !information || !color) {
                 req.flash("error_msg", "Something was missing, try again");
                 return res.redirect("back");
@@ -39,7 +39,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
                 author: req.user.username
             }).save().then(no => {
                 req.flash("success_msg", "Notis made")
-                res.redirect("back");
+                res.redirect("/notis/edit/"+no._id);
             }).catch(e => {
                 log.error(e);
                 res.redirect("back");
@@ -68,7 +68,7 @@ router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
 router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Notis.findOne({ _id: req.params.notis_id }).then(n => {
         if(n) {
-            let { color, information, name, active } = req.body;
+            let { color, information, name, active, height, width } = req.body;
 
             if(!color || !information || !name) {
                 req.flash("error_msg", "Something was missing, please try again");
@@ -83,6 +83,14 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
 
             if(n.color != color) {
                 n.color = color;
+            }
+
+            if(n.height != height) {
+                n.height = height;
+            }
+
+            if(n.width != width) {
+                n.width = width;
             }
 
             if(n.information != information) {
@@ -111,7 +119,7 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
 router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Notis.deleteOne({ _id: req.params.notis_id }).then(n => {
         req.flash("success_msg", "Succesfully removed notis");
-        res.redirect("back");
+        res.redirect("/notis");
     })
 });
 
