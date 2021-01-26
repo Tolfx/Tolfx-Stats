@@ -1,6 +1,6 @@
 # Tolfx Stats
 
-Version: 1.0.0 <br/>
+Version: 1.2.7 <br/>
 Author: Tolfx < Matteus > <br/>
 Description: Stuff for my own kek <br/>
 
