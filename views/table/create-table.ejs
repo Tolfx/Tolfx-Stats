@@ -7,9 +7,9 @@
         <div id="appendRow" class="bg-secondary p-2 rounded ">
             <h1 class="text-center">Rows</h1>
             <a id="addRow" class="btn btn-success btn-block">Add new row</a>
-            <div id="row" class="form-group">
-                <label for="exampleInputPassword1">Row name</label>
-                <input required name="row" class="form-control">
+            <div id="row" class="form-inline form-group mt-3">
+                <label class="mr-2">Row name</label>
+                <input required name="row" class="form-control mr-2">
             </div>
         </div>
         <button type="submit" class="btn btn-primary mt-2">Submit</button>
@@ -23,11 +23,19 @@
     addRow.addEventListener("click", () => {
         let newRow = document.createElement("div");
         newRow.innerHTML = 
-        `<div id="row${count}" class="form-group">
-            <label for="exampleInputPassword1">Row name</label>
-            <input name="row" class="form-control">
+        `<div id="row${count}" class="form-group form-inline mt-3">
+            <label class="mr-2">Row name</label>
+                <input required name="row" class="form-control mr-2">
+                <a id="deleteRow${count}" class="btn btn-danger">X</a>
         </div>`
         appendRow.appendChild(newRow);
+        removeButtonListener(`#deleteRow${count}`, `#row${count}`)
         count++
+
     });
+    function removeButtonListener(element, row) {
+        document.querySelector(element).addEventListener("click", () => {
+            document.querySelector(row).remove();
+        });
+    }
 </script>
