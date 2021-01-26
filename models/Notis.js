@@ -30,6 +30,16 @@ const NotisSchema = new mongoose.Schema({
         default: 0
     },
 
+    width: {
+        type: Number,
+        default: 200
+    },
+
+    height: {
+        type: Number,
+        default: 200
+    },
+
     author: {
         type: String,
         required: true
