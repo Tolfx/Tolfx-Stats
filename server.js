@@ -19,7 +19,6 @@ mongoose.connect(process.env.MONGODB_NAV, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
-    useUnifiedTopology: true,
 });
 
 const db = mongoose.connection;
@@ -68,6 +67,7 @@ app.use(function (req, res, next) {
 //Routers goes here
 app.use("/table", require("./routers/Table"));
 app.use("/notis", require("./routers/Notis"));
+app.use("/explorer", require("./routers/Explorer"));
 
 //This route has to be on the lowest, otherwise epic fail.
 app.use("/", require("./routers/Main"));
