@@ -7,6 +7,12 @@
     <link rel="stylesheet" href="https://bootswatch.com/4/slate/bootstrap.min.css">
     <link rel="stylesheet" href="/css/modified.css">
     <link rel="stylesheet" href="/css/notis.css">
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+      integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+      crossorigin="anonymous"
+    />
     <title>Tolfx Stats</title>
 </head>
 <body class="text-white">
@@ -168,6 +174,17 @@
                             ) { %>
                               <a href="/notis/edit/<%= notis._id %>" class="dropdown-item"><%= notis.name %></a>
                             <% } %>
+                          <% }) %>
+                      </div>
+                    </li>
+                    <li class="nav-item dropdown">
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Maps
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                          <a class="dropdown-item" href="/explorer">Home</a>
+                          <% general.maps.forEach(map => { %>
+                              <a href="/explorer/map/<%= map._id %>" class="dropdown-item"><%= map.name %></a>
                           <% }) %>
                       </div>
                     </li>
