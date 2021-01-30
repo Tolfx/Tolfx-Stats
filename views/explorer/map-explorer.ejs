@@ -1,0 +1,112 @@
+<div class="container mt-3">
+    <h1 class="text-center"><%= map.name %></h1>
+    <div class="text-right">
+        <button title="Upload new file" class="btn btn-warning" data-toggle="modal" data-target="#addFile"><i class="fas fa-3x fa-plus"></i></button>
+    </div>    
+    <% if (files.length > 0) { %>
+        <div class="d-flex flex-wrap">
+            <% files.forEach(file => { %>
+                <div class="card shadow m-1" style="width: 12rem;">
+                    <i class="far fa-5x fa-file pt-3 text-center"></i>
+                    <div class="card-body">
+                    <p title="<%= file.fileInfo.originalname %>" class="text-monospace card-text text-truncate">
+                        <a href="/explorer/file/<%= file.name %>" download>
+                            <%= file.fileInfo.originalname %>
+                        </a>
+                    </p>
+                    <hr>
+                    <button class="btn p-1 btn-danger" onclick="removeFile('<%= file._id %>')">Remove</button>
+                    <button class="btn p-1 btn-warning" onclick="">Edit</button>
+                    <a class="btn p-1 btn-success" href="/explorer/file/<%= file.name %>">View</a>
+                    </div>
+                </div>
+            <% }) %>     
+        </div>
+    <% } %>
+</div>
+
+<!-- Modal for remove table -->
+<div class="modal fade" id="addFile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Upload file</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form enctype="multipart/form-data" action="/explorer/upload" method="post">
+                <div class="modal-body">
+                    <input class="form-control-file" type="file" name="file">
+                    <input class="form-control" type="text" name="mapId" value="<%= map._id %>" readonly>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="divRemoveFile"></div>
+<script>
+    function removeFile(fileId) {
+        document.querySelector("#divRemoveFile").innerHTML = `<div class="modal fade" id="removeFileId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/explorer/file/${fileId}/remove" method="post">
+                <div class="modal-body">
+                Are you sure you want to remove this file?
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#removeFileId").modal('show');
+        });
+
+    };
+</script>
+
+<div id="divEditFile"></div>
+<script>
+    function editFile(fileInfo) {
+        document.querySelector("#divEditFile").innerHTML = `<div class="modal fade" id="removeRowModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+            Are you sure you want to remove this row?
+            </div>
+            <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <a href="/table/remove/row/${rowId}" type="button" class="btn btn-danger">Submit</a>
+            </div>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#divEditFile").modal('show');
+        });
+
+    };
+</script>
