@@ -1,5 +1,6 @@
 let { TableData, Tables } = require("../models/Tables");
 let Notis = require("../models/Notis");
+let { Map } = require("../models/Explorer");
 
 module.exports = {
     ensureIsLoggedIn: (req, res, next) => {
@@ -42,6 +43,8 @@ module.exports = {
         data.tables = await Tables.find() ? await Tables.find() : [];
 
         data.notis = await Notis.find() ? await Notis.find() : [];
+
+        data.maps = await Map.find() ? await Map.find() : [];
 
         res.general = data;
         next();
