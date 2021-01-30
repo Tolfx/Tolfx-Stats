@@ -17,11 +17,6 @@ const Maps = new mongoose.Schema({
         required: false
     },
 
-    mapPath: {
-        type: String,
-        required: true
-    },
-
     createdAt: {
         type: Date,
         default: Date.now,
