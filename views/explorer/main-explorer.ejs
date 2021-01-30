@@ -1,4 +1,44 @@
-<form enctype="multipart/form-data" action="/explorer/upload" method="post">
-    <input type="file" name="file" id="file" multiple>
-    <button type="submit">submit</button>
-</form>
+<div class="container">
+    <div class="text-right">
+        <button 
+            title="Create new map" 
+            class="btn btn-warning" 
+            data-toggle="modal" 
+            data-target="#removeTable"
+        >
+            <i class="fas fa-3x fa-folder-plus"></i>
+        </button>
+    </div>
+    <% if (maps.length > 0) { %>
+        <% maps.forEach(map => { %>
+            <a href="/explorer/map/<%= map._id %>" class="fas fa-3x fa-folder"> <%= map.name %></a>
+        <% }) %>     
+    <% } else { %>
+        <span>Looks like no maps has been created.. create one</span>
+    <% } %> 
+
+</div>
+
+<!-- Modal for remove table -->
+<div class="modal fade" id="removeTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create map</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        </div>
+        <form action="/explorer/create/map" method="post">
+            <div class="modal-body">
+                <label for="name">Map name</label>
+                <input name="name">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-success">Create</button>
+            </div>
+        </form>
+    </div>
+    </div>
+</div>
