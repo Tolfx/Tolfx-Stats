@@ -12,8 +12,8 @@
     <div class="d-flex flex-wrap">
         <% if (maps.length > 0) { %>
             <% maps.forEach(map => { %>
-                <div class="card shadow m-1 bg-dark" style="width: 12rem;">
-                    <i class="far fa-5x fa-folder pt-3 text-center"></i>
+                <div class="card shadow m-1" style="width: 12rem; background-color: rgba(224, 201, 97, 0.623);">
+                    <a class="text-center" href="/explorer/map/<%= map._id %>"><i class="far fa-5x fa-folder pt-3"></i></a>
                     <div class="card-body">
                     <p title="<%= map.name %>" class="text-monospace card-text text-truncate">
                         <a href="/explorer/map/<%= map._id %>">
@@ -21,8 +21,9 @@
                         </a>
                     </p>
                     <hr>
+                    <a class="btn p-1 btn-success" href="/explorer/map/<%= map._id %>">View</a>
+                    <button class="btn p-1 btn-warning" onclick="" disabled>Edit</button>
                     <button class="btn p-1 btn-danger" onclick="removeMap('<%= map._id %>')">Remove</button>
-                    <button class="btn p-1 btn-warning" onclick="">Edit</button>
                     </div>
                 </div>
             <% }) %>   
