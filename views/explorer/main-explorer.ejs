@@ -9,15 +9,58 @@
             <i class="fas fa-3x fa-folder-plus"></i>
         </button>
     </div>
-    <% if (maps.length > 0) { %>
-        <% maps.forEach(map => { %>
-            <a href="/explorer/map/<%= map._id %>" class="fas fa-3x fa-folder"> <%= map.name %></a>
-        <% }) %>     
-    <% } else { %>
-        <span>Looks like no maps has been created.. create one</span>
-    <% } %> 
-
+    <div class="d-flex flex-wrap">
+        <% if (maps.length > 0) { %>
+            <% maps.forEach(map => { %>
+                <div class="card shadow m-1 bg-dark" style="width: 12rem;">
+                    <i class="far fa-5x fa-folder pt-3 text-center"></i>
+                    <div class="card-body">
+                    <p title="<%= map.name %>" class="text-monospace card-text text-truncate">
+                        <a href="/explorer/map/<%= map._id %>">
+                            <%= map.name %>
+                        </a>
+                    </p>
+                    <hr>
+                    <button class="btn p-1 btn-danger" onclick="removeMap('<%= map._id %>')">Remove</button>
+                    <button class="btn p-1 btn-warning" onclick="">Edit</button>
+                    </div>
+                </div>
+            <% }) %>   
+        <% } %>  
+    </div>
 </div>
+
+<div id="divRemoveMap"></div>
+<script>
+    function removeMap(mapId) {
+        document.querySelector("#divRemoveMap").innerHTML = `<div class="modal fade" id="removeMapId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/explorer/map/${mapId}/remove" method="post">
+                <div class="modal-body">
+                Are you sure you want to remove this map?
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#removeMapId").modal('show');
+        });
+
+    };
+</script>
 
 <!-- Modal for remove table -->
 <div class="modal fade" id="removeTable" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
