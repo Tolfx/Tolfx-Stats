@@ -10,6 +10,7 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
+const { setGeneral } = require("./configs/Authenticate")
 
 const app = express();
 
@@ -76,6 +77,8 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
-app.get('*', (req, res) => {
-    res.status(404).render('partials/notFound');
+app.get('*', setGeneral, (req, res) => {
+    res.status(404).render('partials/notFound', {
+        general: res.general
+    });
 });
