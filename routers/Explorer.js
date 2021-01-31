@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const passport = require('passport');
 const User = require('../models/User');
 const log = require("../lib/Loggers");
-const { Tables, TablesData } = require("../models/Tables");
 const { File, Map } = require("../models/Explorer");
 const { GFS_find, GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler")
 const upload = require("../lib/Storage");
@@ -49,12 +46,6 @@ router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) 
 });
 
 router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    GFS_DisplayImage(req.params.file).then(a => {
-        return a.pipe(res);
-    });
-});
-
-router.get("/file1/:file", (req, res) => {
     GFS_DisplayImage(req.params.file).then(a => {
         return a.pipe(res);
     });
