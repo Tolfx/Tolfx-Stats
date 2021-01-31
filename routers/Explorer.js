@@ -84,7 +84,53 @@ router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, (
     });
 });
 
-router.post("/edit/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    Map.findOne({ _id: req.params.map_id }).then(map => {
+        if(map) {
+            File.find({ whichFolderId: map._id }).then(async files => {
+                if(files) {
+                    if(files.length > 0) {
+                        for (let i = 0; i < files.length; i++) {
+                            log.verbos(`Removed file: ${files[i].fileInfo.originalname}`);
+                            await GFS_Remove(files[i].fileInfo.id).catch(e => log.error(e));
+                            
+                            if(i+1==files.length) {
+                                //Remove map and files.
+                                await File.deleteMany({ whichFolderId: map._id });
+                                await Map.deleteOne({ _id: req.params.map_id });
+                                req.flash("success_msg", "Succesfully removed map and all files inside of it.");
+                                return res.redirect("back");
+                            }
+                        }
+                    } else {
+                        //Remove one file and delete.. if possible?
+                        await Map.deleteOne({ _id: req.params.map_id });
+                        req.flash("success_msg", "Succesfully removed map");
+                        return res.redirect("back");
+                    }
+                } else {
+                    //remove map only
+                    await Map.deleteOne({ _id: req.params.map_id });
+                    req.flash("success_msg", "Succesfully removed map");
+                    return res.redirect("back");
+                }
+            }).catch(e => {
+                log.error(e);
+                req.flash("error_msg", "Something went wrong.. try again later.")
+                return res.redirect("back");
+            })
+        } else {
+            req.flash("error_msg", "Unable to find map");
+            return res.redirect("back");
+        }
+    }).catch(e => {
+        log.error(e);
+        req.flash("error_msg", "Something went wrong.. try again later.")
+        return res.redirect("back");
+    });
+});
+
+router.post("/map/:map_id/edit", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Map.findOne({ _id: req.params.map_id }).then(map => {
         if(map) {
             
