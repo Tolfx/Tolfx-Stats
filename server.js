@@ -11,6 +11,7 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
 const { setGeneral } = require("./configs/Authenticate")
+const rateLimit = require("express-rate-limit");
 
 console.log(process.env.PORT)
 
@@ -66,6 +67,14 @@ app.use(function (req, res, next) {
     res.locals.error = req.flash('error');
     next();
 });
+
+//Limiter, to reduce spam if it would happen.
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 500
+});
+
+app.use(limiter);
 
 //Routers goes here
 app.use("/table", require("./routers/Table"));
