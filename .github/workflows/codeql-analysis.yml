@@ -72,7 +72,7 @@ jobs:
     - name: create env file
       run: |
         touch .env
-        echo PORT=${{ secrets.PORT }} >> .env
+        echo PORT=${{ PORT }} >> .env
   
     - name: Run app
       run: node server
