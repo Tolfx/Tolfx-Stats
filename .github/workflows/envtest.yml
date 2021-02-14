@@ -30,5 +30,6 @@ jobs:
     - name: Run app
       env:
         PORT: ${{ secrets.PORT }}
+        MONGODB_NAV: ${{ secrets.MONGODB_NAV }}
       run: node server
       
