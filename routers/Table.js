@@ -50,36 +50,43 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     */
 
     let { tableName, row } = req.body;
-    Tables.findOne({ tableName }).then(table => {
-        if(!table) {
-
-            if(!tableName || !row) {
-                req.flash("error_msg", "Please add a table name and row");
-                res.redirect("back");
+    if(tableName && row)
+    {
+        Tables.findOne({ tableName }).then(table => {
+            if(!table) {
+    
+                if(!tableName || !row) {
+                    req.flash("error_msg", "Please add a table name and row");
+                    res.redirect("back");
+                }
+    
+                new Tables({
+                    tableName,
+                    rows: row
+                }).save().then(t => {
+                    log.verbos("Created a new table with tableName: " + tableName);
+                    req.flash("success_msg", "Table created!");
+                    res.redirect(`/table/view/${t._id}`);
+                }).catch(e => {
+                    log.error(e);
+                    req.flash("error_msg", "An error appeared.. please try again.");
+                    res.redirect("back");
+                });
+            } else {
+    
+                //Change later to edit when added /Done
+                req.flash("error_msg", "Table already exists.");
+                res.redirect(`/table/edit/table/${table._id}`);
             }
-
-            new Tables({
-                tableName,
-                rows: row
-            }).save().then(t => {
-                log.verbos("Created a new table with tableName: " + tableName);
-                req.flash("success_msg", "Table created!");
-                res.redirect(`/table/view/${t._id}`);
-            }).catch(e => {
-                log.error(e);
-                req.flash("error_msg", "An error appeared.. please try again.");
-                res.redirect("back");
-            });
-        } else {
-
-            //Change later to edit when added /Done
-            req.flash("error_msg", "Table already exists.");
-            res.redirect(`/table/edit/table/${table._id}`);
-        }
-    }).catch(e => {
-        log.error(e);
+        }).catch(e => {
+            log.error(e);
+            res.redirect("back");
+        });
+    }
+    else {
+        req.flash("error_msg", "Please define table and row");
         res.redirect("back");
-    });
+    }
 });
 
 /**

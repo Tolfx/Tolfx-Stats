@@ -24,31 +24,33 @@ router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
 });
 
 router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.findOne({ name: req.body.name }).then(n => {
-        if(!n) {
-            let { name, information, color, width, height } = req.body;
-            if(!name || !information || !color) {
-                req.flash("error_msg", "Something was missing, try again");
-                return res.redirect("back");
+    let { name, information, color, width, height } = req.body;
+    if(!name || !information || !color) {
+        req.flash("error_msg", "Something was missing, try again");
+        return res.redirect("back");
+    }
+    else
+    {
+        Notis.findOne({ name: req.body.name }).then(n => {
+            if(!n) {
+                new Notis({
+                    name,
+                    information,
+                    color,
+                    author: req.user.username
+                }).save().then(no => {
+                    req.flash("success_msg", "Notis made")
+                    res.redirect("/notis/edit/"+no._id);
+                }).catch(e => {
+                    log.error(e);
+                    res.redirect("back");
+                })
+            } else {
+                req.flash("error_msg", "Already an existing notis with the same name.");
+                res.redirect("/notis/edit/"+n._id);
             }
-
-            new Notis({
-                name,
-                information,
-                color,
-                author: req.user.username
-            }).save().then(no => {
-                req.flash("success_msg", "Notis made")
-                res.redirect("/notis/edit/"+no._id);
-            }).catch(e => {
-                log.error(e);
-                res.redirect("back");
-            })
-        } else {
-            req.flash("error_msg", "Already an existing notis with the same name.");
-            res.redirect("/notis/edit/"+n._id);
-        }
-    })
+        })
+    }
 });
 
 router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {

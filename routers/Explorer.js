@@ -187,25 +187,32 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
 
 router.post("/create/map", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let mapName = req.body.name;
-    Map.findOne({ name: mapName }).then(map => {
-        if(!map) {
-            //Add submaps later, for now do it later.
-            new Map({
-                name: mapName
-            }).save().then(m => {
-                req.flash("success_msg", `Added new map ${mapName}`);
+    if(mapName)
+    {
+        Map.findOne({ name: mapName }).then(map => {
+            if(!map) {
+                //Add submaps later, for now do it later.
+                new Map({
+                    name: mapName
+                }).save().then(m => {
+                    req.flash("success_msg", `Added new map ${mapName}`);
+                    return res.redirect("back");
+                })
+            } else {
+                req.flash("error_msg", `A map called ${mapName} already exists`);
+                //Go to change map name later..
                 return res.redirect("back");
-            })
-        } else {
-            req.flash("error_msg", `A map called ${mapName} already exists`);
-            //Go to change map name later..
+            }
+        }).catch(e => {
+            log.error(e);
+            req.flash("error_msg", "Something went wrong.. try again later.")
             return res.redirect("back");
-        }
-    }).catch(e => {
-        log.error(e);
-        req.flash("error_msg", "Something went wrong.. try again later.")
+        });
+    }
+    else {
+        req.flash("error_msg", "Unable to find map name");
         return res.redirect("back");
-    });
+    }
 });
 
 module.exports = router;
