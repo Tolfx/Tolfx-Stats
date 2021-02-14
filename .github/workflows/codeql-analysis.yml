@@ -68,14 +68,12 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-
-    - name: create env file
-      run: |
-        touch .env
-        echo PORT=${{ secrets.PORT }} >> .env
   
     - name: Run app
       env:
+        PORT: ${{ secrets.PORT }}
+        SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+        DEBUG: ${{ secrets.DEBUG }}
         MONGODB_NAV: ${{ secrets.MONGODB_NAV }}
       run: node server
       
