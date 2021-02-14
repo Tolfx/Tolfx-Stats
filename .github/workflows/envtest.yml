@@ -15,10 +15,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+<<<<<<< HEAD
 
     - name: Checkout repository
       uses: actions/checkout@v2
       
+=======
+    - name: Checkout repository
+      uses: actions/checkout@v2
+          
+>>>>>>> 8c89dad6d8589a0cc45b711264b3e2a596e22c0e
     - name: Install Dependencies
       run: npm install
 
