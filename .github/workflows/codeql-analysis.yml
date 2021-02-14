@@ -75,5 +75,7 @@ jobs:
         echo PORT=${{ secrets.PORT }} >> .env
   
     - name: Run app
+      env:
+        MONGODB_NAV: ${{ secrets.MONGODB_NAV }}
       run: node server
       
