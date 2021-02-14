@@ -1,0 +1,9 @@
+<div class="container mt-5 d-flex justify-content-center">
+    <% if (file.fileInfo.contentType.match(/jpeg|gif|jpg|jpeg|png/g)) { %>
+        <%- include('./viewFiles/view-image')  %> 
+    <% } else if (file.fileInfo.contentType.match(/mp4|quicktime|x-ms-wmv/g)) { %>
+        <%- include('./viewFiles/view-video')  %> 
+    <% } else { %>
+        <%- include('./viewFiles/view-file')  %> 
+    <% } %>  
+</div>
