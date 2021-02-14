@@ -7,7 +7,7 @@
         <div class="d-flex flex-wrap">
             <% files.forEach(file => { %>
                 <div class="card shadow m-1" style="width: 12rem;">
-                    <a class="text-center" href="/explorer/file/<%= file.name %>"><i class="far fa-5x fa-file pt-3"></i></a>
+                    <a class="text-center" href="/explorer/view/<%= file.name %>"><i class="far fa-5x fa-file pt-3"></i></a>
                     <div class="card-body">
                     <p title="<%= file.fileInfo.originalname %>" class="text-monospace card-text text-truncate">
                         <a href="/explorer/file/<%= file.name %>" download>
@@ -17,7 +17,7 @@
                     <hr>
                     <a class="btn p-1 btn-info" href="/explorer/file/<%= file.name %>" download>Download</a>
                     <button class="btn p-1 btn-warning" onclick="" disabled>Edit</button>
-                    <a class="btn p-1 btn-success" href="/explorer/file/<%= file.name %>">View</a>
+                    <a class="btn p-1 btn-success" href="/explorer/view/<%= file.name %>">View</a>
                     <button class="btn p-1 btn-danger" onclick="removeFile('<%= file._id %>')">Remove</button>
                     </div>
                 </div>
