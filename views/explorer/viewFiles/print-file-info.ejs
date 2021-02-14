@@ -1,0 +1,52 @@
+<div class="card-body">
+    <h5 class="card-title"><%= file.fileInfo.originalname %> <small class="text-muted"><%= file.name %></small></h5>
+    <p class="card-text">Size: <%= file.fileInfo.size/1000 %> KB</p>
+    <p class="card-text">Uploaded: <%= file.fileInfo.uploadDate.toLocaleDateString() %></p>
+    <p class="card-text">Content-type: <%= file.fileInfo.contentType %></p>
+    <p class="card-text" id="dimension"></p>
+    <script>
+        var img = new Image();
+        img.src = '/explorer/file/<%= file.name %>'
+
+        document.querySelector("#dimension").innerText = `Dimension: ${img.height}x${img.width}`
+    </script>
+    <div>
+        <a class="btn p-1 btn-info" href="/explorer/file/<%= file.name %>" download>Download</a>
+        <button class="btn p-1 btn-warning" onclick="" disabled>Edit</button>
+        <button class="btn p-1 btn-danger" onclick="removeFile('<%= file._id %>')">Remove</button>
+        <button class="btn p-1 btn-primary" onclick="Cloud('<%= file._id %>')">Cloud</button>
+    </div>
+</div>
+
+
+<div id="divRemoveFile"></div>
+<script>
+    function removeFile(fileId) {
+        document.querySelector("#divRemoveFile").innerHTML = `<div class="modal fade" id="removeFileId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/explorer/file/${fileId}/remove" method="post">
+                <div class="modal-body">
+                Are you sure you want to remove this file?
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#removeFileId").modal('show');
+        });
+
+    };
+</script>
