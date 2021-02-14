@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const log = require("../lib/Loggers");
 const { File, Map } = require("../models/Explorer");
-const { GFS_find, GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler")
+const { GFS_find, GFS_DisplayImage, GFS_Remove, GFS_findOne } = require("../lib/FilesHandler")
 const upload = require("../lib/Storage");
 const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
 
@@ -49,6 +49,25 @@ router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
     GFS_DisplayImage(req.params.file).then(a => {
         return a.pipe(res);
     });
+});
+
+router.get("/view/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+    File.findOne({ name: req.params.file }).then(f => {
+        if(f)
+        {
+            return res.render('explorer/view-explorer', 
+            {
+                file: f,
+                general: res.general
+            });
+        }
+        else
+        {
+            req.flash("error_msg", "Unable to find file");
+            return res.redirect("back");
+        }
+    })
+
 });
 
 router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
