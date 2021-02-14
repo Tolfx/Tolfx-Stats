@@ -76,3 +76,4 @@ jobs:
   
     - name: Run app
       run: node server
+      

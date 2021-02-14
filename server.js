@@ -12,6 +12,8 @@ const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
 const { setGeneral } = require("./configs/Authenticate")
 
+console.log(process.env.PORT)
+
 const app = express();
 
 require("./configs/Passport")(passport);
