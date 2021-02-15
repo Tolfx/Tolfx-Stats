@@ -1,7 +1,6 @@
 const { TableData, Tables } = require("../models/Tables");
 const Notis = require("../models/Notis");
 const { Map } = require("../models/Explorer");
-const Permissions = require("../models/PermissionRoutes");
 const log = require("../lib/Loggers");
 const Settings = require("../models/Settings");
 const Roles = require("../models/Roles");
