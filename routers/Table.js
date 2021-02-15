@@ -87,7 +87,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, 
     let { tableName, row } = req.body;
     if(tableName && row)
     {
-        Tables.findOne({ tableName }).then(table => {
+        Tables.findOne({ tableName: tableName }).then(table => {
             if(!table) {
                 if(!tableName || !row) {
                     req.flash("error_msg", "Please add a table name and row");

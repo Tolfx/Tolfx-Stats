@@ -17,7 +17,7 @@ router.post("/add-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
     let { name } = req.body;
     if(name)
     {
-        Roles.findOne({ name }).then(ro => {
+        Roles.findOne({ name: name }).then(ro => {
             if(!ro)
             {
                 new Roles({
