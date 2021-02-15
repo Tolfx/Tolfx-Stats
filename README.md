@@ -1,5 +1,5 @@
 # Tolfx Stats
-<img src="https://img.shields.io/github/forks/Tolfx/Tolfx-Stats?label=Forks&style=social">
+[Forks](https://img.shields.io/github/forks/Tolfx/Tolfx-Stats?label=Forks&style=social)
 <img src="https://img.shields.io/github/stars/Tolfx/Tolfx-Stats?style=social">
 <img src="https://img.shields.io/github/package-json/v/Tolfx/Tolfx-Stats">
 <img src="https://img.shields.io/github/languages/top/Tolfx/Tolfx-Stats">
