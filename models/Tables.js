@@ -15,6 +15,17 @@ const Table = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+
+    readRoles: {
+        type: Array,
+        default: [ 'admin' ]
+    },
+
+    writeRoles: {
+        type: Array,
+        default: [ 'admin' ]
+    },
+
 });
 
 const Tables = mongoose.model("table", Table);
