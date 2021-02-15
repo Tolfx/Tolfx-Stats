@@ -15,7 +15,7 @@ module.exports = function (passport) {
 
         if (!user) {
           log.warning(`Someone tried to login with email: ${email}`)
-          return done(null, false, { message: 'That email is not registered' });
+          return done(null, false, { error_msg: 'That email is not registered' });
         }
 
         // Match password
@@ -26,7 +26,7 @@ module.exports = function (passport) {
             return done(null, user);
           } else {
             log.warning(`User ${user.usernamed} failed to login with password attempt: ${password}`)
-            return done(null, false, { message: 'Password incorrect' });
+            return done(null, false, { error_msg: 'Password incorrect' });
           }
         });
       });
