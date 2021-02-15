@@ -1,5 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
 const bcrypt = require('bcryptjs');
+const log = require("../lib/Loggers");
 
 // Load User model
 const User = require('../models/User');
@@ -13,6 +14,7 @@ module.exports = function (passport) {
       }).then((user) => {
 
         if (!user) {
+          log.warning(`Someone tried to login with email: ${email}`)
           return done(null, false, { message: 'That email is not registered' });
         }
 
@@ -20,8 +22,10 @@ module.exports = function (passport) {
         bcrypt.compare(password, user.password, (err, isMatch) => {
           if (err) throw err;
           if (isMatch) {
+            log.verbos(`User ${user.username} logged in.`)
             return done(null, user);
           } else {
+            log.warning(`User ${user.usernamed} failed to login with password attempt: ${password}`)
             return done(null, false, { message: 'Password incorrect' });
           }
         });
@@ -35,6 +39,7 @@ module.exports = function (passport) {
 
   passport.deserializeUser(function (id, done) {
     User.findById(id, function (err, user) {
+      log.verbos(`${user.username} logged out.`)
       done(err, user);
     });
   });
