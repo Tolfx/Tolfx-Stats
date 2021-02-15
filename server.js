@@ -57,6 +57,9 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+//CSRF
+app.use(csrf({ cookie: true }));
+
 // Connect flash
 app.use(flash());
 
@@ -99,6 +102,6 @@ if(process.env.GITHUB_ACTION)
 {
     setTimeout(() => {
         log.debug('Exiting');
-        process.exit(1);
+        process.exit(0);
     }, )
 }
