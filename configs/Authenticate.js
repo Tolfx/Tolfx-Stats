@@ -7,10 +7,12 @@ const Roles = require("../models/Roles");
 
 module.exports = {
     ensureIsLoggedIn: (req, res, next) => {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
         if (req.isAuthenticated()) {
+            log.verbos(`${ip} (${req.user.username}) is viewing ${req.originalUrl}`)
             return next();
         }
-
+        log.verbos(`${ip} attempted to view ${req.originalUrl}`)
         req.flash("error_msg", "Please login to view this.");
         res.redirect("/login");
     },

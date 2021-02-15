@@ -39,7 +39,6 @@ module.exports = function (passport) {
 
   passport.deserializeUser(function (id, done) {
     User.findById(id, function (err, user) {
-      log.verbos(`${user.username} logged out.`)
       done(err, user);
     });
   });
