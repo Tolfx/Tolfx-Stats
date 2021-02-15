@@ -93,3 +93,12 @@ app.get('*', setGeneral, (req, res) => {
         general: res.general
     });
 });
+
+//If in a github action.. exit after 1 min.
+if(process.env.GITHUB_ACTION)
+{
+    setTimeout(() => {
+        log.debug('Exiting');
+        process.exit(1);
+    }, )
+}

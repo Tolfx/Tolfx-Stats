@@ -75,5 +75,6 @@ jobs:
         SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
         DEBUG: ${{ secrets.DEBUG }}
         MONGODB_NAV: ${{ secrets.MONGODB_NAV }}
+        GITHUB_ACTION: true
       run: node server
       
