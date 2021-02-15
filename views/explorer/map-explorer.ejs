@@ -1,7 +1,13 @@
 <div class="container mt-3">
     <h1 class="text-center"><%= map.name %></h1>
     <div class="text-right">
-        <button title="Upload new file" class="btn btn-warning" data-toggle="modal" data-target="#addFile"><i class="fas fa-3x fa-plus"></i></button>
+        <button 
+            title="Upload new file" 
+            class="btn btn-warning" 
+            data-toggle="modal" 
+            data-target="#addFile"
+            <%= map.writeRoles.includes(general.user.role) ? '' : 'disabled' %>
+        ><i class="fas fa-3x fa-plus"></i></button>
     </div>    
     <% if (files.length > 0) { %>
         <div class="d-flex flex-wrap">
@@ -18,7 +24,11 @@
                     <a class="btn p-1 btn-info" href="/explorer/file/<%= file.name %>" download>Download</a>
                     <button class="btn p-1 btn-warning" onclick="" disabled>Edit</button>
                     <a class="btn p-1 btn-success" href="/explorer/view/<%= file.name %>">View</a>
-                    <button class="btn p-1 btn-danger" onclick="removeFile('<%= file._id %>')">Remove</button>
+                    <button 
+                    class="btn p-1 btn-danger" 
+                    onclick="removeFile('<%= file._id %>')"
+                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    >Remove</button>
                     </div>
                 </div>
             <% }) %>     

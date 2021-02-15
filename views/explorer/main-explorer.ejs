@@ -5,6 +5,7 @@
             class="btn btn-warning" 
             data-toggle="modal" 
             data-target="#removeTable"
+            <%= general.user.role === 'admin' ? '' : 'disabled' %> 
         >
             <i class="fas fa-3x fa-folder-plus"></i>
         </button>
@@ -21,9 +22,21 @@
                         </a>
                     </p>
                     <hr>
-                    <a class="btn p-1 btn-success" href="/explorer/map/<%= map._id %>">View</a>
-                    <button class="btn p-1 btn-warning" onclick="" disabled>Edit</button>
-                    <button class="btn p-1 btn-danger" onclick="removeMap('<%= map._id %>')">Remove</button>
+                    <a 
+                    class="btn p-1 btn-success <%= map.readRoles.includes(general.user.role) ? '' : 'disabled' %> " 
+                    href="/explorer/map/<%= map._id %>"
+                    <%= map.readRoles.includes(general.user.role) ? '' : 'aria-disabled="true"' %>
+                    >View</a>
+                    <button 
+                    class="btn p-1 btn-warning" 
+                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    onclick="permissionsMap('<%= map.name %>', '<%= map._id %>', '<%= map.readRoles %>', '<%= map.writeRoles %>', '<%= general.user.role %>', '<%= general.roles.map(e => e.name) %>')"
+                        >Edit</button>
+                    <button
+                    class="btn p-1 btn-danger"
+                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    onclick="removeMap('<%= map._id %>')">
+                    Remove</button>
                     </div>
                 </div>
             <% }) %>   
@@ -61,6 +74,73 @@
         });
 
     };
+</script>
+
+<!-- Modal for permissions -->
+<div id="divEditPerm"></div>
+<script>
+    function permissionsMap(mapName, mapId, mapRead, mapWrite, role, roles)
+    {
+        let readRoles = mapRead.split(",");
+        let writeRoles = mapWrite.split(",");
+        roles = roles.split(",");
+        let tbody = '';
+        for (let i = 0; i < roles.length; i++)
+        {
+            tbody += `
+            <tr>
+                <th scope="row">${roles[i]}</th>
+                <td><input type="checkbox" name="${roles[i]}Write" id="write" ${writeRoles.includes(roles[i]) ? 'checked' : ''}></td>
+                <td><input type="checkbox" name="${roles[i]}Read"  id="read" ${readRoles.includes(roles[i]) ? 'checked' : ''}></td>
+            </tr>
+            `
+
+            if(i+1 == roles.length)
+            {
+                document.querySelector("#divEditPerm").innerHTML = `
+                <div class="modal fade" id="eidtPerm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Permission for map: ${mapName}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <form action="/explorer/map/${mapId}/edit/permission?_csrf=<%= _csrf %>" method="POST">
+                                    <div class="modal-body">
+                                        <table class="table table-striped table-dark">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">Write</th>
+                                                    <th scope="col">Read</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${tbody}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-warning">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+
+                $(document).ready(function(){
+                    $("#eidtPerm").modal('show');
+                });
+            }
+        }
+
+
+
+    }
 </script>
 
 <!-- Modal for remove table -->

@@ -172,9 +172,7 @@
                       <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                           <a class="dropdown-item" href="/notis/create">Create Notis</a>
                           <% general.notis.forEach(notis => { %>
-                            <% if (
-                              notis.author === general.user.username
-                            ) { %>
+                            <% if (notis.author === general.user.username) { %>
                               <a href="/notis/edit/<%= notis._id %>" class="dropdown-item"><%= notis.name %></a>
                             <% } %>
                           <% }) %>
