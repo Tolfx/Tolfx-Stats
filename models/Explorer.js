@@ -17,6 +17,16 @@ const Maps = new mongoose.Schema({
         required: false
     },
 
+    readRoles: {
+        type: Array,
+        default: [ 'admin' ]
+    },
+
+    writeRoles: {
+        type: Array,
+        default: [ 'admin' ]
+    },
+
     createdAt: {
         type: Date,
         default: Date.now,
