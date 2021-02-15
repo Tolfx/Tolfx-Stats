@@ -2,7 +2,7 @@
     <div class="col-md-6 m-auto">
         <div class="card card-body shadow">
         <h1 class="text-center mb-3"><i class="fas fa-sign-in-alt"></i> Login</h1>
-        <form action="/login" method="POST">
+        <form action="/login" method="POST" data-csrf="<%= _csrf %>" >
             <div class="form-group">
             <label for="email">Email</label>
             <input
@@ -23,6 +23,7 @@
                 placeholder="Enter Password"
             />
             </div>
+            <input type="hidden" id="_csrf" name="_csrf" value="<%= _csrf %>" />
             <button type="submit" class="btn btn-primary btn-block" id="login">Login</button>
         </form>
         </div>
