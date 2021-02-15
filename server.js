@@ -14,6 +14,7 @@ const { setGeneral } = require("./configs/Authenticate")
 const rateLimit = require("express-rate-limit");
 const csrf = require("csurf");
 const cookieParser = require('cookie-parser')
+const { Version } = require("./Config");
 
 const app = express();
 
@@ -53,7 +54,6 @@ app.use(
     })
 );
 
-
 // Passport middleware
 app.use(cookieParser())
 app.use(passport.initialize());
@@ -70,6 +70,10 @@ app.use(function (req, res, next) {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
+
+    //Version
+    res.locals.version = Version;
+
     next();
 });
 
@@ -91,6 +95,7 @@ app.use(limiter);
 app.use("/table", require("./routers/Table"));
 app.use("/notis", require("./routers/Notis"));
 app.use("/explorer", require("./routers/Explorer"));
+app.use("/admin", require("./routers/Admin"));
 
 //This route has to be on the lowest, otherwise epic fail.
 app.use("/", require("./routers/Main"));
