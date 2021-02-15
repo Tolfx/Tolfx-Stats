@@ -1,6 +1,10 @@
-let { TableData, Tables } = require("../models/Tables");
-let Notis = require("../models/Notis");
-let { Map } = require("../models/Explorer");
+const { TableData, Tables } = require("../models/Tables");
+const Notis = require("../models/Notis");
+const { Map } = require("../models/Explorer");
+const Permissions = require("../models/PermissionRoutes");
+const log = require("../lib/Loggers");
+const Settings = require("../models/Settings");
+const Roles = require("../models/Roles");
 
 module.exports = {
     ensureIsLoggedIn: (req, res, next) => {
@@ -12,6 +16,19 @@ module.exports = {
         res.redirect("/login");
     },
 
+    ensureIsAdmin: (req, res, next) =>
+    {
+        if(req.user.role === 'admin')
+        {
+            next()
+        }
+        else
+        {
+            req.flash("error_msg", "Only admins are allowed.");
+            return res.redirect("back");
+        }
+    },
+
     checkSetup: (req, res, next) => {
         require("../models/User").findOne({ username: "admin" }).then(u => {
             if(!u) {
@@ -21,6 +38,25 @@ module.exports = {
                 next();
             }
         });
+
+        Settings.find().then(s => {
+            if(s.length <= 0)
+            {
+                log.error("No settings.. creating one");
+                new Settings().save();
+            }
+        });
+
+        Roles.findOne({ name: 'admin' }).then(r => {
+            if(!r)
+            {
+                log.error(`Role admin has not been created.. creating one.`);
+                new Roles({
+                    name: 'admin'
+                }).save();
+            }
+        });
+
     },
 
     setGeneral: async (req, res, next) => {
@@ -45,6 +81,8 @@ module.exports = {
         data.notis = await Notis.find() ? await Notis.find() : [];
 
         data.maps = await Map.find() ? await Map.find() : [];
+
+        data.roles = await Roles.find() ? await Roles.find() : [];
 
         res.general = data;
         next();
