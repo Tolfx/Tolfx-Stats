@@ -3,7 +3,7 @@
         <div class="alert alert-warning" role="alert">
             To continue, please insert a admin password for default login, and an email.
         </div>
-        <form action="/setup" method="post">
+        <form action="/setup?_csrf=<%= _csrf %>" method="post">
             <div class="card-body rounded">
                 <div class="form m-2">
                     <label for="email">Email</label>

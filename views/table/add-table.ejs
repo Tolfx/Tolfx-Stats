@@ -1,6 +1,6 @@
 <div class="container bg-primary rounded p-3 mt-5">
     <h1 class=""><%= table.tableName %></h1>
-    <form action="/table/add/<%= table._id %>" method="post">
+    <form action="/table/add/<%= table._id %>?_csrf=<%= _csrf %>" method="post">
         <div id="appendRow" class="bg-secondary p-2 rounded ">
             <h1 class="text-center">Rows</h1>
             <% for( let i = 0; i < table.rows.length; i++ ) { %>

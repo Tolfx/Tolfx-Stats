@@ -36,7 +36,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form enctype="multipart/form-data" action="/explorer/upload" method="post">
+            <form enctype="multipart/form-data" action="/explorer/upload?_csrf=<%= _csrf %>" method="post">
                 <div class="modal-body">
                     <input class="form-control-file" type="file" name="file">
                     <input class="form-control" type="text" name="mapId" value="<%= map._id %>" readonly>
@@ -62,7 +62,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form action="/explorer/file/${fileId}/remove" method="post">
+            <form action="/explorer/file/${fileId}/remove?_csrf=<%= _csrf %>" method="post">
                 <div class="modal-body">
                 Are you sure you want to remove this file?
                 </div>

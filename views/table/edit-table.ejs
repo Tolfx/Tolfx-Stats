@@ -1,5 +1,5 @@
 <div class="container bg-primary rounded p-3 mt-5">
-    <form action="/table/edit/table/<%= table._id %>" method="post">
+    <form action="/table/edit/table/<%= table._id %>?_csrf=<%= _csrf %>" method="post">
         <div class="form-group">
             <label for="exampleInputEmail1">Table name</label>
             <input value="<%= table.tableName %>" required name="tableName" class="form-control" placeholder="Table name">

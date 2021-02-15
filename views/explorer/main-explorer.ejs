@@ -43,7 +43,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form action="/explorer/map/${mapId}/remove" method="post">
+            <form action="/explorer/map/${mapId}/remove?_csrf=<%= _csrf %>" method="post">
                 <div class="modal-body">
                 Are you sure you want to remove this map?
                 </div>
@@ -73,7 +73,7 @@
             <span aria-hidden="true">&times;</span>
         </button>
         </div>
-        <form action="/explorer/create/map" method="post">
+        <form action="/explorer/create/map?_csrf=<%= _csrf %>" method="post">
             <div class="modal-body">
                 <label for="name">Map name</label>
                 <input name="name">

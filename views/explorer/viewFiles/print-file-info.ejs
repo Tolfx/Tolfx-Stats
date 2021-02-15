@@ -31,7 +31,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form action="/explorer/file/${fileId}/remove" method="post">
+            <form action="/explorer/file/${fileId}/remove?_csrf=<%= _csrf %>" method="post">
                 <div class="modal-body">
                 Are you sure you want to remove this file?
                 </div>
