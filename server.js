@@ -12,8 +12,7 @@ const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
 const { setGeneral } = require("./configs/Authenticate")
 const rateLimit = require("express-rate-limit");
-
-console.log(process.env.PORT)
+const csrf = require("csurf");
 
 const app = express();
 
@@ -101,7 +100,9 @@ app.get('*', setGeneral, (req, res) => {
 if(process.env.GITHUB_ACTION)
 {
     setTimeout(() => {
-        log.debug('Exiting');
-        process.exit(0);
-    }, )
+        process.exit(0); // <-- Exit with code 0
+    }, 60000) // <--- 1 min
 }
+
+//Load events here.
+require("./events/NodeEvents")();
