@@ -7,7 +7,6 @@ const marked = require('marked');
 const createDomPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 const dompurify = createDomPurify(new JSDOM().window);
-const createPermission = require("../lib/CreatePermission");
 const Roles = require("../models/Roles");
 
 /**
@@ -99,13 +98,9 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, 
                     tableName,
                     rows: row
                 }).save().then(t => {
-                    createPermission(`/table/view/${t._id}`).then(async () => {
-                        await createPermission(`/table/add/${t._id}`);
-                        await createPermission(`/table/remove//table/${t._id}`);
-                        log.verbos("Created a new table with tableName: " + tableName);
-                        req.flash("success_msg", "Table created!");
-                        res.redirect(`/table/view/${t._id}`);
-                    })
+                    log.verbos("Created a new table with tableName: " + tableName);
+                    req.flash("success_msg", "Table created!");
+                    res.redirect(`/table/view/${t._id}`);
                 }).catch(e => {
                     log.error(e);
                     req.flash("error_msg", "An error appeared.. please try again.");
