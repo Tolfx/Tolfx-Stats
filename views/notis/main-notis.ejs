@@ -3,7 +3,9 @@
     <div class="mt-3">
         <% if (notis.length > 0) { %>
             <% notis.forEach(n => { %>
-                <a class="btn btn-<% if (n.active) { %>success<% } else { %>danger<% } %> btn-block" href="/notis/edit/<%= n._id %>"><%= n.name %></a>
+                <% if (notis.author === general.user.username) { %>
+                    <a class="btn btn-<% if (n.active) { %>success<% } else { %>danger<% } %> btn-block" href="/notis/edit/<%= n._id %>"><%= n.name %></a>
+                <% } %>
             <% }) %>
         <% } %>
     </div>
