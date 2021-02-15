@@ -4,12 +4,83 @@
         <a class="btn btn-block btn-warning" href="/table/create">Create new table</a>
         <div class="bg-primary rounded p-2 mt-2">
             <% for( let i = 0; i < tables.length; i++ ) { %>
-                <a href="/table/view/<%= tables[i]._id %>" class="btn btn-success btn-block m-1"><%= tables[i].tableName %></a>    
+                <div class="btn-toolbar m-3">
+                    <a href="/table/view/<%= tables[i]._id %>" class="btn btn-success btn-block <%= tables[i].readRoles.includes(general.user.role) ? '' : 'disabled' %>" style="width: 89%;" role="button" <%= tables[i].readRoles.includes(general.user.role) ? '' : 'aria-disabled="true"' %>><%= tables[i].tableName %></a>
+                    <a type="button" class="btn btn-secondary <%= general.user.role == "admin" ? '' : 'disabled' %>" onclick="permissionsTable(`<%= tables[i].tableName %>`, '<%= tables[i]._id %>' ,'<%= tables[i].readRoles %>', '<%= tables[i].writeRoles %>', '<%= general.user.role %>', '<%= general.roles.map(e => e.name) %>')">Permissions</a>
+                </div>
             <% } %>
-            </div>
+        </div>
     <% } else { %>
         <div class="text-center" style="margin-top: 20%;">
             <a href="/table/create" class="btn bg-danger text-white">No tables found... create one..</a>
         </div>
     <% } %> 
 </div>
+
+<!-- Modal for permissions -->
+<div id="divEditPerm"></div>
+
+<script>
+    function permissionsTable(tableName, tableId, tableRead, tableWrite, role, roles)
+    {
+        let readRoles = tableRead.split(",");
+        let writeRoles = tableWrite.split(",");
+        roles = roles.split(",");
+        let tbody = '';
+        for (let i = 0; i < roles.length; i++)
+        {
+            tbody += `
+            <tr>
+                <th scope="row">${roles[i]}</th>
+                <td><input type="checkbox" name="${roles[i]}Write" id="write" ${writeRoles.includes(roles[i]) ? 'checked' : ''}></td>
+                <td><input type="checkbox" name="${roles[i]}Read"  id="read" ${readRoles.includes(roles[i]) ? 'checked' : ''}></td>
+            </tr>
+            `
+
+            if(i+1 == roles.length)
+            {
+                document.querySelector("#divEditPerm").innerHTML = `
+                <div class="modal fade" id="eidtPerm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Permission for table: ${tableName}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                </div>
+                                <form action="/table/edit/permission/${tableId}?_csrf=<%= _csrf %>" method="POST">
+                                    <div class="modal-body">
+                                        <table class="table table-striped table-dark">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Role</th>
+                                                    <th scope="col">Write</th>
+                                                    <th scope="col">Read</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                ${tbody}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-warning">Submit</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+
+                $(document).ready(function(){
+                    $("#eidtPerm").modal('show');
+                });
+            }
+        }
+
+
+
+    }
+</script>

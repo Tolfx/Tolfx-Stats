@@ -193,6 +193,12 @@
                     </li>
                   </ul>
                   <button class="btn btn-primary" onClick="window.history.back()">Back</button>
+                  <% if(general.user.role === 'admin') { %> 
+                    <div class="form-inline my-2 my-lg-0">
+                        <a  class="btn btn-success mr-sm-2" href="/admin">Admin Panel</a>
+                    </div>
+                  <% } %>
+
                 </div>
               </nav>
         </div>
