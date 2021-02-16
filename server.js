@@ -52,11 +52,10 @@ app.use(
         resave: false,
         saveUninitialized: true,
         cookie: {
-            secure: true,
-            maxAge: 60000,
+            path: "/",
+            maxAge: 24*60*60*1000,
             domain: process.env.DOMAIN,
             sameSite: true,
-            path: "/",
         }
     })
 );
