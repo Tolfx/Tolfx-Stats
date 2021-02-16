@@ -1,0 +1,57 @@
+<style>
+
+</style>
+
+<div class="container ">
+    <table class="table table-bordered table-striped table-dark table-fixed">
+        <div class="input-group-sm mt-4">
+            <div class="text-center">
+                <% if (typeof pages.previous != "undefined") { %>
+                    <a class="btn btn-primary" href="/admin/logs?page=<%= pages.previous.page %>">Previous</a>
+                <% } %> 
+                <% if (typeof pages.next != "undefined") { %>
+                    <a class="btn btn-primary" href="/admin/logs?page=<%= pages.next.page %>">Next</a>
+                <% } %> 
+            </div>
+            <input id="searchTable" class="form-control mr-sm-2 " type="search" placeholder="Search" aria-label="Search">
+        </div>
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Message</th>
+            <th scope="col">Type</th>
+            <th scope="col">Date</th>
+          </tr>
+        </thead>
+        <tbody id="myTable">
+            <% let bigResult = pages.result.slice().reverse() %> 
+            <% for( let i = 0; i < bigResult.length; i++ ) { %>
+                <tr class="<% if (bigResult[i].type == 'warning') { %>
+                    table-warning 
+                <% } else if(bigResult[i].type == 'error') { %>
+                    table-danger
+                <% } else if(bigResult[i].type == 'debug') { %>
+                    table-info
+                <% } else if(bigResult[i].type == 'verbos') { %>
+                    table-active
+                <% } %> ">
+                    <th scope="row"><%= i+1 %></th>
+                    <td><%= bigResult[i].message %></td>
+                    <td><%= bigResult[i].type %></td>
+                    <td><%= bigResult[i].createdAt.toLocaleDateString() %></td>
+                    </tr>
+            <% } %>
+        </tbody>
+      </table>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#searchTable").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>

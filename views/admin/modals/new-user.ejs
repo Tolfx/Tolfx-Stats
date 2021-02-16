@@ -1,0 +1,45 @@
+<!-- Modal for new user -->
+<div class="modal fade" id="addUser" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">New user</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/admin/add-user?_csrf=<%= _csrf %>" method="post">
+                <div class="modal-body">
+                    <div class="form m-2">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" placeholder="Email">
+                    </div>
+                    <div class="form m-2">
+                        <label for="username">Username</label>
+                        <input type="username" name="username" class="form-control" id="username" placeholder="Username">
+                    </div>
+                    <div class="form m-2">
+                        <label for="role">Role</label>
+                        <select id="inputState" name="role" class="form-control">
+                            <% general.roles.forEach(role => { %>
+                                <option><%= role.name %></option>
+                           <% }) %> 
+                        </select>
+                    </div>
+                    <div class="form m-2">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" class="form-control" id="password1" placeholder="Password">
+                    </div>
+                    <div class="form m-2">
+                        <label for="password2">Repeat password</label>
+                        <input type="password" name="password2" class="form-control" id="password2" placeholder="Repeat password">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
