@@ -4,13 +4,23 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const log = require("../lib/Loggers");
 const { Tables, TablesData } = require("../models/Tables");
+const Logging = require("../models/Logging");
 const Roles = require("../models/Roles");
 const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
+const Pagination = require("../lib/Pagination");
 
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-  res.render("admin/main-admin", {
-    general: res.general
-  });
+    res.render("admin/main-admin", {
+            general: res.general
+    });
+});
+
+router.get("/logs", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, Pagination(Logging, true), (req, res) => {
+    let pages = res.paginatedPage;
+    res.render("admin/logs", {
+        general: res.general,
+        pages: pages
+    });
 });
 
 
