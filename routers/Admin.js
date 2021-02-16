@@ -9,9 +9,10 @@ const Roles = require("../models/Roles");
 const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
 const Pagination = require("../lib/Pagination");
 
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
-            general: res.general
+        general: res.general,
+        allUsers: await User.find()
     });
 });
 
@@ -22,7 +23,6 @@ router.get("/logs", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, Pag
         pages: pages
     });
 });
-
 
 router.post("/add-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     let { name } = req.body;
@@ -113,6 +113,88 @@ router.post("/add-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
           };
         };
     });
+});
+
+router.post("/remove-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+    let { user } = req.body;
+    if(user)
+    {
+        User.findOne({ username: user }).then(u => {
+            if(u)
+            {
+                User.deleteOne({ username: user }).then(du => {
+                    req.flash("success_msg", "User deleted");
+                    return res.redirect("back");
+                }).catch(e => {
+                    log.error(e)
+                    req.flash("error_msg", "Something went wrong.. try again later.");
+                    return res.redirect("back");
+                })
+            }
+            else
+            {
+                req.flash("error_msg", "User doesn't exist");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e)
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    }
+    else
+    {
+        req.flash("error_msg", "Please define user in body");
+        return res.redirect("back");
+    }
+});
+
+router.post("/remove-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+    let { role } = req.body;
+    if(role)
+    {
+        Roles.findOne({ name: role }).then(r => {
+            if(r)
+            {
+                User.findOne({ role: role }).then(u => {
+                    if(!u)
+                    {
+                        Roles.deleteOne({ name: role }).then(dr => {
+                            req.flash("success_msg", "Role deleted");
+                            return res.redirect("back");
+                        }).catch(e => {
+                            log.error(e)
+                            req.flash("error_msg", "Something went wrong.. try again later.");
+                            return res.redirect("back");
+                        });                        
+                    }
+                    else
+                    {
+                        req.flash("error_msg", "Roles has been detected to be registered on user(s), therefor role wont be deleted.");
+                        return res.redirect("back");
+                    }
+                }).catch(e => {
+                    log.error(e)
+                    req.flash("error_msg", "Something went wrong.. try again later.");
+                    return res.redirect("back");                    
+                })
+            }
+            else
+            {
+                req.flash("error_msg", "Role doesn't exist");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e)
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    }
+    else
+    {
+        req.flash("error_msg", "Please define role in body");
+        return res.redirect("back");
+    }
 });
 
 module.exports = router;
