@@ -45,12 +45,19 @@ app.use(methodOverride('_method'));
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 
-// Express session
+// Session
 app.use(
     session({
         secret: process.env.SESSION_SECRET,
-        resave: true,
+        resave: false,
         saveUninitialized: true,
+        cookie: {
+            secure: true,
+            maxAge: 60000,
+            domain: process.env.DOMAIN,
+            sameSite: true,
+            path: "/",
+        }
     })
 );
 

@@ -13,6 +13,7 @@ Description: A multi use tool for private use, or more.. <br/>
 
 * MongoDB Database
 * Node.js | Version 12
+* A domain with HTTPS (For secure connection)
 
 # Setup
 
