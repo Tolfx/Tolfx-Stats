@@ -1,0 +1,51 @@
+
+<!-- Modal for view user -->
+<div class="modal fade" id="viewUser" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">All users</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <input id="searchTable" class="form-control mr-sm-2 " type="search" placeholder="Search" aria-label="Search">
+                <table class="table table-striped table-dark">
+                    <thead>
+                      <tr>
+                        <th scope="col">Username</th>
+                        <th scope="col">Role</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Created at</th>
+                      </tr>
+                    </thead>
+                    <tbody id="myTable">
+                      <tr>
+                        <% allUsers.forEach(user => { %>
+                            <td><%= user.username %></td>
+                            <td><%= user.role %></td>
+                            <td><%= user.email %></td>
+                            <td><%= user.joined.toLocaleDateString() %></td>
+                        <% }) %>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function(){
+        $("#searchTable").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#myTable tr").filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
