@@ -404,26 +404,29 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                 {
                     let OLD_ROW = row.tableData.map(e => e.value);
                     let NEW_ROW = req.body.row;
-                    if(OLD_ROW != NEW_ROW) {
-                        //If new rows..
-                        if(NEW_ROW.length > OLD_ROW.length) {
-                            log.debug("New row added")
-                            row.tableData.push({value: null, row: null, valueS: null});
-                        }
-    
-                        for (let i = 0; i < NEW_ROW.length; i++) {
-                            row.tableData[i].value = NEW_ROW[i];
-                            row.tableData[i].valueS = dompurify.sanitize(marked(NEW_ROW[i]));
-                            if(i+1 == OLD_ROW.length) {
-                                row.markModified('tableData');
-                                row.save().then(r => {
-                                    req.flash("success_msg", "Succesfully changed row")
-                                    return res.redirect("back");
-                                }).catch(e => {
-                                    log.error(e);
-                                    req.flash("error_msg", "Something went wrong.. try again.");
-                                    return res.redirect("back");
-                                });
+                    if(!NEW_ROW.length >= 100)
+                    {
+                        if(OLD_ROW != NEW_ROW) {
+                            //If new rows..
+                            if(NEW_ROW.length > OLD_ROW.length) {
+                                log.debug("New row added")
+                                row.tableData.push({value: null, row: null, valueS: null});
+                            }
+        
+                            for (let i = 0; i < NEW_ROW.length; i++) {
+                                row.tableData[i].value = NEW_ROW[i];
+                                row.tableData[i].valueS = dompurify.sanitize(marked(NEW_ROW[i]));
+                                if(i+1 == OLD_ROW.length) {
+                                    row.markModified('tableData');
+                                    row.save().then(r => {
+                                        req.flash("success_msg", "Succesfully changed row")
+                                        return res.redirect("back");
+                                    }).catch(e => {
+                                        log.error(e);
+                                        req.flash("error_msg", "Something went wrong.. try again.");
+                                        return res.redirect("back");
+                                    });
+                                }
                             }
                         }
                     }

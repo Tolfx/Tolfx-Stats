@@ -16,6 +16,7 @@ const csrf = require("csurf");
 const cookieParser = require('cookie-parser')
 const { Version } = require("./Config");
 
+const is_prod = process.env.ISPROD === "true" ? true : false;
 const app = express();
 
 require("./configs/Passport")(passport);
@@ -54,8 +55,8 @@ app.use(
         cookie: {
             path: "/",
             maxAge: 24*60*60*1000,
-            domain: process.env.DOMAIN,
-            sameSite: true,
+            domain: is_prod ? process.env.DOMAIN : '',
+            sameSite: is_prod,
         }
     })
 );
