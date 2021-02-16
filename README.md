@@ -7,7 +7,6 @@
 
 <hr/>
 
-Version: 1.3.1 <br/>
 Author: Tolfx < Matteus > <br/>
 Description: A multi use tool for private use, or more.. <br/>
 # Requirement
