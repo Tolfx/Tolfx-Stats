@@ -1,12 +1,29 @@
 <div class="container">
-
-    <div class="rounded bg-primary shadow p-2 mt-5">
+    <h1 class="text-center text-monospace mt-5">Admin panel</h1>
+    <div class="rounded bg-primary shadow p-2 mt-3">
         <h2 class="text-center">General admins commands</h2>
         <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#addUser">Create new user</button>
         <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#addRole">Create new role</button>
-        <a class="btn btn-block btn-warning" href="/admin/logs?page=1">Logs</a>
+    </div>
+
+    <div class="rounded bg-primary shadow p-2 mt-3">
+        <h2 class="text-center">View commands</h2>
+        <a class="btn btn-block btn-info" href="/admin/logs?page=1">Logs</a>
+        <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewUser">View all users</button>
+        <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewRole" disabled>View all roles</button>
+    </div>
+
+    <div class="rounded bg-primary shadow p-2 mt-3">
+        <h2 class="text-center">Modification commands</h2>
+        <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeUser">Remove user</button>
+        <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeRole">Remove role</button>
     </div>
 </div>
 
-<%- include("./modals/new-role")  %> 
-<%- include("./modals/new-user")  %> 
+<%- include("./modals/new-role")  %>
+<%- include("./modals/new-user")  %>
+
+<%- include("./modals/view-users")  %>
+
+<%- include("./modals/remove-role")  %>
+<%- include("./modals/remove-user")  %>
