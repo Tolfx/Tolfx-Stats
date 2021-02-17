@@ -9,6 +9,10 @@ const { Tables, TablesData } = require("../models/Tables");
 const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
 const cleanQuery = require('mongo-sanitize');
 
+/**
+ * @GET /notis
+ * @description Default route for /notis.
+ */
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Notis.find().then(n => {
         res.render("notis/main-notis", {
@@ -18,12 +22,20 @@ router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     });
 });
 
+/**
+ * @GET /notis/create
+ * @description To create a new notis.
+ */
 router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     res.render("notis/create-notis", {
         general: res.general
     });
 });
 
+/**
+ * @POST /notis/create
+ * @description To create a new notis post.
+ */
 router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let { name, information, color, width, height } = req.body;
     if(!name || !information || !color) {
@@ -57,6 +69,10 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     }
 });
 
+/**
+ * @GET /notis/edit/:notis_id
+ * @description To edit a already existing notis.
+ */
 router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.findOne({ _id: notisId }).then(n => {
@@ -72,6 +88,10 @@ router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
     });
 });
 
+/**
+ * @POST /notis/edit/:notis_id
+ * @description To edit a already existing notis.
+ */
 router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.findOne({ _id: notisId }).then(n => {
@@ -124,6 +144,10 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
     });
 });
 
+/**
+ * @GET /notis/remove/:notis_id
+ * @description Removes a notis for the specific ID
+ */
 router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.deleteOne({ _id: notisId }).then(n => {
@@ -132,6 +156,10 @@ router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, 
     })
 });
 
+/**
+ * @POST /notis/save/:notis/pos/:x/:y
+ * @description Saves a notis position.
+ */
 router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis)
     Notis.findOne({ _id: notisId }).then(n => {
@@ -147,6 +175,10 @@ router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, 
     });
 });
 
+/**
+ * @POST /notis/:notis/closed/:active
+ * @description Closes the notis, or opens it depending on the value (boolean)
+ */
 router.post("/save/:notis/closed/:active", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis)
     Notis.findOne({ _id: notisId }).then(n => {
