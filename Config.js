@@ -1,4 +1,6 @@
-const Version = '1.3.1';
+const fs = require('fs');
+
+const Version = (JSON.parse(fs.readFileSync("./package.json"))).version;
 
 module.exports = {
     Version

@@ -1,13 +1,13 @@
 {
   "name": "Tolfx-Stats",
-  "version": "1.4.6",
+  "version": "1.4.9",
   "description": "",
   "main": "server.js",
   "scripts": {
     "run": "node server"
   },
   "keywords": [],
-  "author": "",
+  "author": "Tolfx",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",
