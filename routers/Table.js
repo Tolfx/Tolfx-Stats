@@ -197,7 +197,7 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
 
                             //We push it to final[] with different values.
                             final.push({
-                                        //So we take the reqBodyValues and take the index that we got.
+                                //So we take the reqBodyValues and take the index that we got.
                                 value: reqBodyValues[indexOfBody],
                                 valueS: dompurify.sanitize(marked(reqBodyValues[indexOfBody])),
                                 row: table.rows[i]
@@ -211,12 +211,12 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
                             tableRow: table.tableName,
                             tableConnectId: table._id
                         }).save().then(newT => {
-                            log.debug("Created new table data");
-                            res.redirect("/table/view/"+table._id);
+                            log.verbos(`Created new table data from user ${req.user.username}`);
+                            return res.redirect("/table/view/"+table._id);
                         }).catch(e => {
                             log.error(e);
-                            res.redirect("back");
-                        })
+                            return res.redirect("back");
+                        });
                     }
                 }
             }
@@ -226,11 +226,13 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
                 return res.redirect("back");
             }
         } else {
-            res.redirect("back");
+            req.flash("error_msg", "Table doesn't exist")
+            return res.redirect("back");
         }
     }).catch(e => {
         log.error(e);
-        res.redirect("back");
+        req.flash("error_msg", "Something went wrong.. try again later.")
+        return res.redirect("back");
     });
 });
 
@@ -254,6 +256,7 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
                     });
                 }).catch(e => {
                     log.error(e);
+                    req.flash("error_msg", "Something went wrong.. try again later.")
                     return res.redirect("back");
                 });
             }
@@ -263,10 +266,12 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
                 return res.redirect("back");
             }
         } else {
+            req.flash("error_msg", "Table doesn't exist")
             return res.redirect("back");
         }
     }).catch(e => {
         log.error(e);
+        req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
 });
@@ -292,6 +297,7 @@ router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (r
                 return res.redirect("back");
             }
         } else {
+            req.flash("error_msg", "Table doesn't exist")
             return res.redirect("back");
         }
     });
@@ -326,7 +332,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
                                     t[x].tableData[i].row = NEW_Rows[i]
         
                                     if(i+1 == t[x].tableData.length) {
-                                        log.debug("Saving..");
+                                        log.verbos("Saving new data..");
                                         
                                         //This .markModified is needed or it gets cucked hard.
                                         t[x].markModified('tableData');
@@ -343,6 +349,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
                     return res.redirect("back");
                 }).catch(e => {
                     log.error(e);
+                    req.flash("error_msg", "Something went wrong.. try again later.")
                     return res.redirect("back");
                 });
             }
@@ -352,6 +359,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
                 return res.redirect("back");
             }
         } else {
+            req.flash("error_msg", "Table doesn't exist")
             return res.redirect("back");
         }
     });
@@ -383,10 +391,12 @@ router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, 
             })
 
         } else {
+            req.flash("error_msg", "Row doesn't exist..")
             return res.redirect("back");
         }
     }).catch(e => {
         log.error(e);
+        req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
 });
@@ -410,7 +420,7 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                         if(OLD_ROW != NEW_ROW) {
                             //If new rows..
                             if(NEW_ROW.length > OLD_ROW.length) {
-                                log.debug("New row added")
+                                log.verbos("New row data added in table: " + t.tableName)
                                 row.tableData.push({value: null, row: null, valueS: null});
                             }
         
@@ -420,6 +430,7 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                                 if(i+1 == OLD_ROW.length) {
                                     row.markModified('tableData');
                                     row.save().then(r => {
+                                        log.verbos(`Table: ${t.tableName} has a row that has been edited.. (${r._id} | ${r.tableRow})`)
                                         req.flash("success_msg", "Succesfully changed row")
                                         return res.redirect("back");
                                     }).catch(e => {
@@ -439,10 +450,12 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
                 }
             })
         } else {
+            req.flash("error_msg", "Row doesn't exist")
             return res.redirect("back");
         }
     }).catch(e => {
         log.error(e);
+        req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
 });
@@ -453,6 +466,7 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
  */
 router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     TablesData.deleteOne({ _id: cleanQuery(req.params.row_id) }).then(r => {
+        log.warning(`Row ${r.tableRow} (${cleanQuery(req.params.row_id)}) has been removed.`)
         req.flash("success_msg", "Removed the row");
         return res.redirect("back");
     });
@@ -520,7 +534,8 @@ router.post("/edit/permission/:table_id", checkSetup, ensureIsLoggedIn, setGener
  */
 router.get("/remove/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     Tables.deleteOne({ _id: cleanQuery(req.params.table_id) }).then(t => {
-        TablesData.deleteMany({ tableConnectId: req.params.table_id }).then(r => {
+        TablesData.deleteMany({ tableConnectId: cleanQuery(req.params.table_id) }).then(r => {
+            log.warning(`${cleanQuery(req.params.table_id)} has been deleted with all of its content.`)
             req.flash("success_msg", "Removed table and all data..");
             return res.redirect("/table");
         });
