@@ -8,6 +8,7 @@ const createDomPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
 const dompurify = createDomPurify(new JSDOM().window);
 const Roles = require("../models/Roles");
+const cleanQuery = require('mongo-sanitize');
 
 /**
  * 
@@ -87,6 +88,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, 
     let { tableName, row } = req.body;
     if(tableName && row)
     {
+        tableName = cleanQuery(tableName)
         Tables.findOne({ tableName: tableName }).then(table => {
             if(!table) {
                 if(!tableName || !row) {
@@ -128,7 +130,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, 
  * @description Goes to the specific table which can later do a post request to create new data.
  */
 router.get("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let Id = req.params.table_id;
+    let Id = cleanQuery(req.params.table_id);
     Tables.findOne({ _id: Id }).then(table => {
         if(table) {
             if(checkWritePerm(table, req))
@@ -158,8 +160,7 @@ router.get("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res
  * @description Adds new data to the specific table, which gets added to the tabledata db.
  */
 router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-
-    let Id = req.params.table_id;
+    let Id = cleanQuery(req.params.table_id);
     Tables.findOne({ _id: Id }).then(table => {
         if(table) {
             if(checkWritePerm(table, req))
@@ -238,7 +239,7 @@ router.post("/add/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
  * @description Views the specific table, with it specific data.
  */
 router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let tableId = req.params.table_id;
+    let tableId = cleanQuery(req.params.table_id);
     Tables.findOne({ _id: tableId }).then(table => {
         if(table) {
             if(checkReadPerm(table, req))
@@ -275,7 +276,7 @@ router.get("/view/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
  * @description To edit a tables row or name.
  */
 router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let tableId = req.params.table_id;
+    let tableId = cleanQuery(req.params.table_id);
     Tables.findOne({ _id: tableId }).then(table => {
         if(table) {
             if(checkWritePerm(table, req))
@@ -301,7 +302,7 @@ router.get("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (r
  * @description Edits the tables name or rows.
  */
 router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let tableId = req.params.table_id;
+    let tableId = cleanQuery(req.params.table_id);
     Tables.findOne({ _id: tableId }).then(table => {
         if(table) {
             if(checkWritePerm(table, req))
@@ -361,7 +362,7 @@ router.post("/edit/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, (
  * @description To edit specific rows. 
  */
 router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let rowDataId = req.params.row_id;
+    let rowDataId = cleanQuery(req.params.row_id);
     TablesData.findOne({ _id: rowDataId }).then(async row => {
         if(row) {
             Tables.findOne({ _id: row.tableConnectId }).then(t => {
@@ -395,7 +396,7 @@ router.get("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, 
  * @description Edits the specific rows in table.
  */
 router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    let rowDataId = req.params.row_id;
+    let rowDataId = cleanQuery(req.params.row_id);
     TablesData.findOne({ _id: rowDataId }).then(row => {
         if(row) 
         {
@@ -451,7 +452,7 @@ router.post("/edit/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, (req,
  * @description To remove a specific row, that is not needed.. this will be effected in tablesdata.
  */
 router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    TablesData.deleteOne({ _id: req.params.row_id }).then(r => {
+    TablesData.deleteOne({ _id: cleanQuery(req.params.row_id) }).then(r => {
         req.flash("success_msg", "Removed the row");
         return res.redirect("back");
     });
@@ -462,7 +463,7 @@ router.get("/remove/row/:row_id", checkSetup, ensureIsLoggedIn, setGeneral, ensu
  * @description Edit permission on specific table.
  */
 router.post("/edit/permission/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    let tableId = req.params.table_id;
+    let tableId = cleanQuery(req.params.table_id);
     if(tableId)
     {
         Tables.findOne({ _id: tableId }).then(async t => {
@@ -518,7 +519,7 @@ router.post("/edit/permission/:table_id", checkSetup, ensureIsLoggedIn, setGener
  * @description To removes a specific table, and all of is data.
  */
 router.get("/remove/table/:table_id", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    Tables.deleteOne({ _id: req.params.table_id }).then(t => {
+    Tables.deleteOne({ _id: cleanQuery(req.params.table_id) }).then(t => {
         TablesData.deleteMany({ tableConnectId: req.params.table_id }).then(r => {
             req.flash("success_msg", "Removed table and all data..");
             return res.redirect("/table");

@@ -29,6 +29,7 @@
     "jsdom": "^16.4.0",
     "marked": "^2.0.0",
     "method-override": "^3.0.0",
+    "mongo-sanitize": "^1.1.0",
     "mongoose": "^5.11.16",
     "multer": "^1.4.2",
     "multer-gridfs-storage": "^4.2.0",

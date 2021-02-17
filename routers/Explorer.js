@@ -7,6 +7,7 @@ const { GFS_find, GFS_DisplayImage, GFS_Remove, GFS_findOne } = require("../lib/
 const upload = require("../lib/Storage");
 const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
 const Roles = require("../models/Roles");
+const cleanQuery = require('mongo-sanitize');
 
 /**
  * 
@@ -60,7 +61,8 @@ router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
 });
 
 router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Map.findOne({ _id: req.params.map_id }).then(map => {
+    let mapId = cleanQuery(req.params.map_id)
+    Map.findOne({ _id: mapId }).then(map => {
         if(map) {
             if(checkReadPerm(map, req))
             {
@@ -93,13 +95,14 @@ router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) 
 });
 
 router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    File.findOne({ name: req.params.file }).then(async f => {
+    let fileId = cleanQuery(req.params.file);
+    File.findOne({ name: fileId }).then(async f => {
         if(f)
         {
             let map = await Map.findOne({ _id: f.whichFolderId }).catch(e => log.error(e));
             if(checkReadPerm(map, req))
             {
-                GFS_DisplayImage(req.params.file).then(a => {
+                GFS_DisplayImage(fileId).then(a => {
                     return a.pipe(res);
                 });
             }
@@ -111,14 +114,15 @@ router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
         }
         else
         {
-
+            req.flash("error_msg", "Unable to find file");
+            return res.redirect("back");
         }
-    })
-
+    })//catch me here
 });
 
 router.get("/view/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    File.findOne({ name: req.params.file }).then(async f => {
+    let fileId = cleanQuery(req.params.file)
+    File.findOne({ name: fileId }).then(async f => {
         if(f)
         {
             let map = await Map.findOne({ _id: f.whichFolderId }).catch(e => log.error(e));
@@ -146,11 +150,12 @@ router.get("/view/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
 });
 
 router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    File.findOne({ _id: req.params.file_id }).then(f => {
+    let fileId = cleanQuery(req.params.file_id)
+    File.findOne({ _id: fileId }).then(f => {
         if(f) {
             GFS_Remove(f.fileInfo.id).then(async bf => {
                 if(bf) {
-                    await File.deleteOne({ _id: req.params.file_id })
+                    await File.deleteOne({ _id: fileId })
                     req.flash("success_msg", "Succesfully removed file");
                     return res.redirect("back");
                 } else {
@@ -170,7 +175,8 @@ router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, e
 });
 
 router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    Map.findOne({ _id: req.params.map_id }).then(map => {
+    let mapId = cleanQuery(req.params.map_id)
+    Map.findOne({ _id: mapId }).then(map => {
         if(map) {
             File.find({ whichFolderId: map._id }).then(async files => {
                 if(files) {
@@ -182,20 +188,20 @@ router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ens
                             if(i+1==files.length) {
                                 //Remove map and files.
                                 await File.deleteMany({ whichFolderId: map._id });
-                                await Map.deleteOne({ _id: req.params.map_id });
+                                await Map.deleteOne({ _id: mapId });
                                 req.flash("success_msg", "Succesfully removed map and all files inside of it.");
                                 return res.redirect("back");
                             }
                         }
                     } else {
                         //Remove one file and delete.. if possible?
-                        await Map.deleteOne({ _id: req.params.map_id });
+                        await Map.deleteOne({ _id: mapId });
                         req.flash("success_msg", "Succesfully removed map");
                         return res.redirect("back");
                     }
                 } else {
                     //remove map only
-                    await Map.deleteOne({ _id: req.params.map_id });
+                    await Map.deleteOne({ _id: mapId });
                     req.flash("success_msg", "Succesfully removed map");
                     return res.redirect("back");
                 }
@@ -216,7 +222,8 @@ router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ens
 });
 
 router.post("/map/:map_id/edit/permission", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    Map.findOne({ _id: req.params.map_id }).then(async map => {
+    let mapId = cleanQuery(req.params.map_id)
+    Map.findOne({ _id: mapId }).then(async map => {
         if(map) {
             //Gather the roles.
             let roles = await Roles.find().catch(e => log.error(e));
@@ -257,7 +264,8 @@ router.post("/map/:map_id/edit/permission", checkSetup, ensureIsLoggedIn, setGen
 })
 
 router.post("/map/:map_id/edit", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
-    Map.findOne({ _id: req.params.map_id }).then(map => {
+    let mapId = cleanQuery(req.params.map_id)
+    Map.findOne({ _id: mapId }).then(map => {
         if(map) {
             
         } else {
@@ -274,8 +282,9 @@ router.post("/map/:map_id/edit", checkSetup, ensureIsLoggedIn, setGeneral, ensur
 router.post("/upload", upload.single("file"), (req, res, next) => {
     function removeFile(fileId) { GFS_Remove(fileId).then(() => true).catch(e => { log.error(e); return false; }) };
     if(req.file) {
-        if(req.body.mapId) {
-            Map.findOne({ _id: req.body.mapId }).then(m => {
+        let mapId = cleanQuery(req.body.mapId)
+        if(mapId) {
+            Map.findOne({ _id: mapId }).then(m => {
                 if(m) {
                     if(checkWritePerm(m, req))
                     {
@@ -315,7 +324,7 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
 });
 
 router.post("/create/map", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, ensureIsAdmin, (req, res) => {
-    let mapName = req.body.name;
+    let mapName = cleanQuery(req.body.name);
     if(mapName)
     {
         Map.findOne({ name: mapName }).then(map => {

@@ -8,6 +8,7 @@ const Logging = require("../models/Logging");
 const Roles = require("../models/Roles");
 const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
 const Pagination = require("../lib/Pagination");
+const cleanQuery = require('mongo-sanitize');
 
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
@@ -26,6 +27,7 @@ router.get("/logs", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, Pag
 
 router.post("/add-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     let { name } = req.body;
+    name = cleanQuery(name);
     if(name)
     {
         Roles.findOne({ name: name }).then(ro => {
@@ -72,6 +74,8 @@ router.post("/add-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
         return res.redirect("back");
     }
 
+    username = cleanQuery(username);
+
     User.findOne({ username: username }).then(u => {
         if(u) 
         {
@@ -117,6 +121,7 @@ router.post("/add-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
 
 router.post("/remove-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     let { user } = req.body;
+    user = cleanQuery(user);
     if(user)
     {
         User.findOne({ username: user }).then(u => {
@@ -151,6 +156,7 @@ router.post("/remove-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAd
 
 router.post("/remove-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
     let { role } = req.body;
+    role = cleanQuery(role);
     if(role)
     {
         Roles.findOne({ name: role }).then(r => {

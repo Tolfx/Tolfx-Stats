@@ -7,6 +7,7 @@ const log = require("../lib/Loggers");
 const Notis = require("../models/Notis");
 const { Tables, TablesData } = require("../models/Tables");
 const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
+const cleanQuery = require('mongo-sanitize');
 
 router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     Notis.find().then(n => {
@@ -31,12 +32,15 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     }
     else
     {
-        Notis.findOne({ name: req.body.name }).then(n => {
+        name = cleanQuery(name)
+        Notis.findOne({ name: name }).then(n => {
             if(!n) {
                 new Notis({
                     name,
                     information,
                     color,
+                    width,
+                    height,
                     author: req.user.username
                 }).save().then(no => {
                     req.flash("success_msg", "Notis made")
@@ -54,7 +58,8 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
 });
 
 router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.findOne({ _id: req.params.notis_id }).then(n => {
+    let notisId = cleanQuery(req.params.notis_id)
+    Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
             res.render("notis/edit-notis", {
                 notis: n,
@@ -68,7 +73,8 @@ router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
 });
 
 router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.findOne({ _id: req.params.notis_id }).then(n => {
+    let notisId = cleanQuery(req.params.notis_id)
+    Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
             let { color, information, name, active, height, width } = req.body;
 
@@ -119,14 +125,16 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
 });
 
 router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.deleteOne({ _id: req.params.notis_id }).then(n => {
+    let notisId = cleanQuery(req.params.notis_id)
+    Notis.deleteOne({ _id: notisId }).then(n => {
         req.flash("success_msg", "Succesfully removed notis");
         res.redirect("/notis");
     })
 });
 
 router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.findOne({ _id: req.params.notis }).then(n => {
+    let notisId = cleanQuery(req.params.notis)
+    Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
             let { x, y } = req.params;
             n.posX = x;
@@ -140,7 +148,8 @@ router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, 
 });
 
 router.post("/save/:notis/closed/:active", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
-    Notis.findOne({ _id: req.params.notis }).then(n => {
+    let notisId = cleanQuery(req.params.notis)
+    Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
             let { active } = req.params;
             n.closed = active
