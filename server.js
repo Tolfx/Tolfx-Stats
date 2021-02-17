@@ -56,7 +56,8 @@ app.use(
             path: "/",
             maxAge: 24*60*60*1000,
             domain: is_prod ? process.env.DOMAIN : '',
-            sameSite: is_prod,
+            //secure: is_prod,
+            sameSite: is_prod ? 'strict' : false,
         }
     })
 );
