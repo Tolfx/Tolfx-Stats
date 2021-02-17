@@ -29,12 +29,6 @@ mongoose.connect(process.env.MONGODB_NAV, {
 
 const db = mongoose.connection;
 
-db.on('error', (error) => log.error(error));
-
-db.once('open', () => {
-    log.verbos("Connected to database");
-});
-
 // EJS
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
@@ -128,3 +122,4 @@ if(process.env.GITHUB_ACTION)
 
 //Load events here.
 require("./events/NodeEvents")();
+require("./events/MongooseEvents")(db);
