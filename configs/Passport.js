@@ -22,10 +22,10 @@ module.exports = function (passport) {
         bcrypt.compare(password, user.password, (err, isMatch) => {
           if (err) throw err;
           if (isMatch) {
-            log.verbos(`User ${user.username} logged in.`)
+            log.info(`User ${user.username} logged in.`)
             return done(null, user);
           } else {
-            log.warning(`User ${user.usernamed} failed to login with password attempt: ${password}`)
+            log.warning(`User ${user.username} failed to login.`)
             return done(null, false, { error_msg: 'Password incorrect' });
           }
         });
