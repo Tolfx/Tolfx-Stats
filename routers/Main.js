@@ -78,7 +78,7 @@ router.get('/login', checkSetup, setGeneral, (req, res) => {
 // Login
 router.post('/login', (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  log.verbos(`${ip} is attempting to login`);
+  log.warning(`${ip} is attempting to login`);
 
   passport.authenticate('local', {
     successRedirect: '/',
@@ -90,7 +90,7 @@ router.post('/login', (req, res, next) => {
 // Logout
 router.get('/logout', checkSetup, (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  log.verbos(`User ${req.user.username} (${ip}) logged out.`)
+  log.info(`User ${req.user.username} (${ip}) logged out.`)
 
   req.logout();
   req.flash('success_msg', 'Logged out');

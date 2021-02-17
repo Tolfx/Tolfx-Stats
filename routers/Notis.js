@@ -55,7 +55,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
                     height,
                     author: req.user.username
                 }).save().then(no => {
-                    log.verbos(`A new notis has been created from user ${req.user.username}.`)
+                    log.info(`A new notis has been created from user ${req.user.username}.`)
                     req.flash("success_msg", "Notis made")
                     return res.redirect("/notis/edit/"+no._id);
                 }).catch(e => {
@@ -131,7 +131,7 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
             }
 
             n.save().then(() => {
-                log.verbos(`${n.name} (${n._id}) was edited by user`)
+                log.info(`${n.name} (${n._id}) was edited by user: ${req.user.username}`)
                 req.flash("success_msg", "Succesfully changed notis.");
                 return res.redirect("back");
             }).catch(e => {
