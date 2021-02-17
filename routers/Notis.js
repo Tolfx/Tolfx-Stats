@@ -45,7 +45,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     else
     {
         name = cleanQuery(name)
-        Notis.findOne({ name: name }).then(n => {
+        Notis.findOne({ name: name, author: req.user.username }).then(n => {
             if(!n) {
                 new Notis({
                     name,
@@ -55,8 +55,9 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
                     height,
                     author: req.user.username
                 }).save().then(no => {
+                    log.verbos(`A new notis has been created from user ${req.user.username}.`)
                     req.flash("success_msg", "Notis made")
-                    res.redirect("/notis/edit/"+no._id);
+                    return res.redirect("/notis/edit/"+no._id);
                 }).catch(e => {
                     log.error(e);
                     res.redirect("back");
@@ -130,16 +131,17 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
             }
 
             n.save().then(() => {
+                log.verbos(`${n.name} (${n._id}) was edited by user`)
                 req.flash("success_msg", "Succesfully changed notis.");
-                res.redirect("back");
+                return res.redirect("back");
             }).catch(e => {
                 log.error(e);
                 req.flash("error_msg", "Something went wrong.. try again later.");
-                res.redirect("back");
+                return res.redirect("back");
             })
         } else {
             req.flash("error_msg", "Unable to find this specific notis..");
-            res.redirect("back");
+            return res.redirect("back");
         }
     });
 });
@@ -151,8 +153,9 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
 router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.deleteOne({ _id: notisId }).then(n => {
+        log.warning(`${notisId} was deleted.`)
         req.flash("success_msg", "Succesfully removed notis");
-        res.redirect("/notis");
+        return res.redirect("/notis");
     })
 });
 

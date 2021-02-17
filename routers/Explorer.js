@@ -89,6 +89,7 @@ router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) 
             else
             {
                 req.flash("error_msg", "You don't have permission to view this map.");
+                log.warning(`${req.user.username} tried to view ${map.name}`)
                 return res.redirect("back");
             }
         } else {
@@ -114,6 +115,7 @@ router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
             let map = await Map.findOne({ _id: f.whichFolderId }).catch(e => log.error(e));
             if(checkReadPerm(map, req))
             {
+                log.info(`${f.fileInfo.originalname} (${fileId}) was requested by: ${req.user.username}`)
                 GFS_DisplayImage(fileId).then(a => {
                     return a.pipe(res);
                 });
@@ -176,6 +178,7 @@ router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, e
             GFS_Remove(f.fileInfo.id).then(async bf => {
                 if(bf) {
                     await File.deleteOne({ _id: fileId })
+                    log.info(`File: ${f.fileInfo.originalname} was removed by user: ${req.user.username}`)
                     req.flash("success_msg", "Succesfully removed file");
                     return res.redirect("back");
                 } else {
@@ -213,6 +216,7 @@ router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ens
                                 //Remove map and files.
                                 await File.deleteMany({ whichFolderId: map._id });
                                 await Map.deleteOne({ _id: mapId });
+                                log.info(`${map.name} was removed with all of its content by: ${req.user.username}`)
                                 req.flash("success_msg", "Succesfully removed map and all files inside of it.");
                                 return res.redirect("back");
                             }
@@ -220,12 +224,14 @@ router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ens
                     } else {
                         //Remove one file and delete.. if possible?
                         await Map.deleteOne({ _id: mapId });
+                        log.info(`${map.name} was removed by: ${req.user.username}`)
                         req.flash("success_msg", "Succesfully removed map");
                         return res.redirect("back");
                     }
                 } else {
                     //remove map only
                     await Map.deleteOne({ _id: mapId });
+                    log.info(`${map.name} was removed by: ${req.user.username}`)
                     req.flash("success_msg", "Succesfully removed map");
                     return res.redirect("back");
                 }
@@ -274,7 +280,7 @@ router.post("/map/:map_id/edit/permission", checkSetup, ensureIsLoggedIn, setGen
                     map.writeRoles = finishedWriteRoles;
 
                     map.save().then(nm => {
-                        log.verbos(`Changed permissions for ${map.name}`);
+                        log.info(`Changed permissions for ${map.name}`);
                         req.flash("success_msg", "Succesfuly changed permissions");
                         return res.redirect("back");
                     })
@@ -331,6 +337,7 @@ router.post("/upload", checkSetup, ensureIsLoggedIn, setGeneral, upload.single("
                             fileInfo: req.file,
                             hasPassword: false
                         }).save().then(f => {
+                            log.info(`New file uploaded by: ${req.user.username}`)
                             req.flash("success_msg", "File created");
                             return res.redirect("back");
                         })
@@ -338,6 +345,7 @@ router.post("/upload", checkSetup, ensureIsLoggedIn, setGeneral, upload.single("
                     else
                     {
                         removeFile(req.file.id);
+                        log.warning(`${req.user.usernamed} attempted to upload a file without permission.`)
                         req.flash("error_msg", "You don't have permission to upload files.");
                         return res.redirect("back");
                     }
@@ -374,6 +382,7 @@ router.post("/create/map", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdm
                 new Map({
                     name: mapName
                 }).save().then(m => {
+                    log.info(`${mapName} was created by: ${req.user.username}`)
                     req.flash("success_msg", `Added new map ${mapName}`);
                     return res.redirect("back");
                 })
