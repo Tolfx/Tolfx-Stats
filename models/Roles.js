@@ -7,6 +7,21 @@ const RoleSchema = new mongoose.Schema({
         required: true
     },
 
+    root: {
+        type: Boolean,
+        default: false
+    },
+
+    canCreate: {
+        type: Boolean,
+        default: false,
+    },
+
+    canRemove: {
+        type: Boolean,
+        default: false
+    },
+
 });
 
 const Roles = mongoose.model('roles', RoleSchema);
