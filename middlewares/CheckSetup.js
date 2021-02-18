@@ -28,7 +28,10 @@ function checkSetup(req, res, next) {
         {
             log.error(`Role admin has not been created.. creating one.`);
             new Roles({
-                name: 'admin'
+                name: 'admin',
+                canCreate: true,
+                canRemove: true,
+                root: true
             }).save();
         }
     });
