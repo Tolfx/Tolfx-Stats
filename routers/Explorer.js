@@ -8,45 +8,7 @@ const upload = require("../lib/Storage");
 const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
 const Roles = require("../models/Roles");
 const cleanQuery = require('mongo-sanitize');
-const { CheckSetup, SetGeneral } = require("../middlewares/Main");
-
-/**
- * 
- * @param {*} tableData 
- * @param {*} req 
- * @description Check if the user has write permission on this map.
- */
-function checkWritePerm(map, req)
-{
-    let userRole = req.user.role;
-    if(map.writeRoles.includes(userRole))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-/**
- * 
- * @param {*} tableData 
- * @param {*} req 
- * @description Check if the user has read permission on this map.
- */
-function checkReadPerm(map, req)
-{
-    let userRole = req.user.role;
-    if(map.readRoles.includes(userRole))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+const { CheckSetup, SetGeneral, CanWrite, CanRead, CanRemove, CanCreate } = require("../middlewares/Main");
 
 /**
  * @GET /explorer
@@ -69,30 +31,22 @@ router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
  * @GET /explorer/map/:map_id
  * @description Views a specific map by id.
  */
-router.get("/map/:map_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
+router.get("/map/:map_id", CheckSetup, ensureIsLoggedIn, SetGeneral, 
+    CanRead(Map, '_id', 'params', 'map_id'), (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
-            if(checkReadPerm(map, req))
-            {
-                File.find({ whichFolderId: map._id }).then(f => {
-                    return res.render("explorer/map-explorer", {
-                        general: res.general,
-                        map,
-                        files: f
-                    });
-                }).catch(e => {
-                    log.error(e);
-                    req.flash("error_msg", "Something went wrong.. try again later.")
-                    return res.redirect("back");
-                })
-            }
-            else
-            {
-                req.flash("error_msg", "You don't have permission to view this map.");
-                log.warning(`${req.user.username} tried to view ${map.name}`)
+            File.find({ whichFolderId: map._id }).then(f => {
+                return res.render("explorer/map-explorer", {
+                    general: res.general,
+                    map,
+                    files: f
+                });
+            }).catch(e => {
+                log.error(e);
+                req.flash("error_msg", "Something went wrong.. try again later.")
                 return res.redirect("back");
-            }
+            })
         } else {
             req.flash("error_msg", "Unable to find map");
             return res.redirect("back");            
@@ -113,19 +67,20 @@ router.get("/file/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
     File.findOne({ name: fileId }).then(async f => {
         if(f)
         {
-            let map = await Map.findOne({ _id: f.whichFolderId }).catch(e => log.error(e));
-            if(checkReadPerm(map, req))
-            {
-                log.info(`${f.fileInfo.originalname} (${fileId}) was requested by: ${req.user.username}`)
-                GFS_DisplayImage(fileId).then(a => {
-                    return a.pipe(res);
-                });
-            }
-            else
-            {
-                req.flash("error_msg", "You don't have permission to view this file.");
-                return res.redirect("back");
-            }
+            CanRead(Map, '_id', 'none', f.whichFolderId, false, false, (e => {
+                if(e)
+                {
+                    log.info(`${f.fileInfo.originalname} (${fileId}) was requested by: ${req.user.username}`)
+                    GFS_DisplayImage(fileId).then(a => {
+                        return a.pipe(res);
+                    });
+                }
+                else
+                {
+                    req.flash("error_msg", "You don't have permission to view this file.");
+                    return res.redirect("back");
+                }
+            }))(req)
         }
         else
         {
@@ -145,19 +100,21 @@ router.get("/view/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
         if(f)
         {
             let map = await Map.findOne({ _id: f.whichFolderId }).catch(e => log.error(e));
-            if(checkReadPerm(map, req))
-            {
-                return res.render('explorer/view-explorer', 
+            CanRead(Map, '_id', 'none', f.whichFolderId, false, false, (e => {
+                if(e)
                 {
-                    file: f,
-                    general: res.general
-                });
-            }
-            else
-            {
-                req.flash("error_msg", "You don't have permission to view this file.");
-                return res.redirect("back");
-            }
+                    return res.render('explorer/view-explorer', 
+                    {
+                        file: f,
+                        general: res.general
+                    });
+                }
+                else
+                {
+                    req.flash("error_msg", "You don't have permission to view this file.");
+                    return res.redirect("back");
+                }
+            }))(req)
         }
         else
         {
@@ -172,7 +129,7 @@ router.get("/view/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
  * @POST /explorer/file/:file_id/remove
  * @description Removes a specific file by id. (only admin)
  */
-router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, CanRemove(Roles), (req, res) => {
     let fileId = cleanQuery(req.params.file_id)
     File.findOne({ _id: fileId }).then(f => {
         if(f) {
@@ -202,7 +159,7 @@ router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, e
  * @POST /explorer/map/:map_id/remove
  * @description Removes a specific map and all is content. (only admin)
  */
-router.post("/map/:map_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+router.post("/map/:map_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, CanRead(Map, '_id', 'params', 'map_id'), CanRemove(Roles), (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
@@ -323,34 +280,23 @@ router.post("/map/:map_id/edit", CheckSetup, ensureIsLoggedIn, SetGeneral, ensur
  * @POST /explorer/upload
  * @description Uploads a file to a specific mapid.
  */
-router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, upload.single("file"), (req, res, next) => {
+router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, CanWrite(Map, '_id', 'body', 'mapId'), upload.single("file"), (req, res, next) => {
     function removeFile(fileId) { GFS_Remove(fileId).then(() => true).catch(e => { log.error(e); return false; }) };
     if(req.file) {
         let mapId = cleanQuery(req.body.mapId)
         if(mapId) {
             Map.findOne({ _id: mapId }).then(m => {
                 if(m) {
-                    if(checkWritePerm(m, req))
-                    {
-                        new File({
-                            whichFolderId: m._id,
-                            name: req.file.filename,
-                            fileInfo: req.file,
-                            hasPassword: false
-                        }).save().then(f => {
-                            log.info(`New file uploaded by: ${req.user.username}`)
-                            req.flash("success_msg", "File created");
-                            return res.redirect("back");
-                        })
-                    }
-                    else
-                    {
-                        removeFile(req.file.id);
-                        log.warning(`${req.user.usernamed} attempted to upload a file without permission.`)
-                        req.flash("error_msg", "You don't have permission to upload files.");
+                    new File({
+                        whichFolderId: m._id,
+                        name: req.file.filename,
+                        fileInfo: req.file,
+                        hasPassword: false
+                    }).save().then(f => {
+                        log.info(`New file uploaded by: ${req.user.username}`)
+                        req.flash("success_msg", "File created");
                         return res.redirect("back");
-                    }
-
+                    })
                 } else {
                     removeFile(req.file.id)
                     req.flash("error_msg", "Failed to find map");
@@ -373,7 +319,7 @@ router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, upload.single("
  * @POST /explorer/create/map
  * @description Creates a new map. (only admin)
  */
-router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, ensureIsAdmin, (req, res) => {
+router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, CanCreate(Roles), (req, res) => {
     let mapName = cleanQuery(req.body.name);
     if(mapName)
     {
@@ -381,7 +327,9 @@ router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdm
             if(!map) {
                 //Add submaps later, for now do it later.
                 new Map({
-                    name: mapName
+                    name: mapName,
+                    writeRoles: [`${req.user.role}`, 'admin'],
+                    readRoles: [`${req.user.role}`, 'admin'],
                 }).save().then(m => {
                     log.info(`${mapName} was created by: ${req.user.username}`)
                     req.flash("success_msg", `Added new map ${mapName}`);
