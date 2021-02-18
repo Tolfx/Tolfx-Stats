@@ -17,6 +17,11 @@ module.exports = {
         res.redirect("/login");
     },
 
+    /**
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     ensureIsAdmin: (req, res, next) =>
     {
         if(req.user.role === 'admin')
@@ -30,6 +35,12 @@ module.exports = {
         }
     },
 
+    /**
+     * @deprecated
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     checkSetup: (req, res, next) => {
         require("../models/User").findOne({ username: "admin" }).then(u => {
             if(!u) {
@@ -60,6 +71,12 @@ module.exports = {
 
     },
 
+    /**
+     * @deprecated
+     * @param {*} req 
+     * @param {*} res 
+     * @param {*} next 
+     */
     setGeneral: async (req, res, next) => {
         let data = {};
 
