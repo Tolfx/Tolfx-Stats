@@ -7,6 +7,18 @@ const log = require("../lib/Loggers");
 const { ensureIsLoggedIn } = require("../configs/Authenticate");
 const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
+function isLoggedIn(req, res, next)
+{
+  if(req.isAuthenticated())
+  {
+    res.redirect("back");
+  }
+  else
+  {
+    next()
+  }
+}
+
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
   res.render("home", {
     general: res.general
@@ -70,7 +82,7 @@ router.post("/setup", (req, res) => {
 });
 
 //Login route
-router.get('/login', CheckSetup, SetGeneral, (req, res) => {
+router.get('/login', isLoggedIn, CheckSetup, SetGeneral,  (req, res) => {
   res.render('login', {
     general: res.general
   });
