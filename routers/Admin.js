@@ -7,9 +7,8 @@ const { Tables, TablesData } = require("../models/Tables");
 const Logging = require("../models/Logging");
 const Roles = require("../models/Roles");
 const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
-const Pagination = require("../lib/Pagination");
 const cleanQuery = require('mongo-sanitize');
-const { CheckSetup, SetGeneral } = require("../middlewares/Main");
+const { CheckSetup, SetGeneral, Pagination } = require("../middlewares/Main");
 
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
