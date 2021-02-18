@@ -6,14 +6,15 @@ const User = require('../models/User');
 const log = require("../lib/Loggers");
 const Notis = require("../models/Notis");
 const { Tables, TablesData } = require("../models/Tables");
-const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
+const { ensureIsLoggedIn } = require("../configs/Authenticate");
 const cleanQuery = require('mongo-sanitize');
+const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
 /**
  * @GET /notis
  * @description Default route for /notis.
  */
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     Notis.find().then(n => {
         res.render("notis/main-notis", {
             general: res.general,
@@ -26,7 +27,7 @@ router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
  * @GET /notis/create
  * @description To create a new notis.
  */
-router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     res.render("notis/create-notis", {
         general: res.general
     });
@@ -36,7 +37,7 @@ router.get("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
  * @POST /notis/create
  * @description To create a new notis post.
  */
-router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.post("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let { name, information, color, width, height } = req.body;
     if(!name || !information || !color) {
         req.flash("error_msg", "Something was missing, try again");
@@ -74,7 +75,7 @@ router.post("/create", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
  * @GET /notis/edit/:notis_id
  * @description To edit a already existing notis.
  */
-router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
@@ -93,7 +94,7 @@ router.get("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, re
  * @POST /notis/edit/:notis_id
  * @description To edit a already existing notis.
  */
-router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.post("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
@@ -150,7 +151,7 @@ router.post("/edit/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, r
  * @GET /notis/remove/:notis_id
  * @description Removes a notis for the specific ID
  */
-router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/remove/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
     Notis.deleteOne({ _id: notisId }).then(n => {
         log.warning(`${notisId} was deleted.`)
@@ -163,7 +164,7 @@ router.get("/remove/:notis_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, 
  * @POST /notis/save/:notis/pos/:x/:y
  * @description Saves a notis position.
  */
-router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.post("/save/:notis/pos/:x/:y", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis)
     Notis.findOne({ _id: notisId }).then(n => {
         if(n) {
@@ -182,7 +183,7 @@ router.post("/save/:notis/pos/:x/:y", checkSetup, ensureIsLoggedIn, setGeneral, 
  * @POST /notis/:notis/closed/:active
  * @description Closes the notis, or opens it depending on the value (boolean)
  */
-router.post("/save/:notis/closed/:active", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.post("/save/:notis/closed/:active", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis)
     Notis.findOne({ _id: notisId }).then(n => {
         if(n) {

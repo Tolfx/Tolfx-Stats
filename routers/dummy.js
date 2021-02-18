@@ -5,9 +5,10 @@ const passport = require('passport');
 const User = require('../models/User');
 const log = require("../lib/Loggers");
 const { Tables, TablesData } = require("../models/Tables");
-const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
+const { ensureIsLoggedIn } = require("../configs/Authenticate");
+const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
   res.render("home", {
     general: res.general
   });

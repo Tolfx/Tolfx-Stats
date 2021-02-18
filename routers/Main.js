@@ -4,15 +4,16 @@ const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/User');
 const log = require("../lib/Loggers");
-const { checkSetup, ensureIsLoggedIn, setGeneral } = require("../configs/Authenticate");
+const { ensureIsLoggedIn } = require("../configs/Authenticate");
+const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
   res.render("home", {
     general: res.general
   });
 });
 
-router.get("/setup", setGeneral, (req, res) => {
+router.get("/setup", SetGeneral, (req, res) => {
   User.findOne({ username: "admin" }).then(u => {
     if(u) {
       return res.redirect("back");
@@ -69,7 +70,7 @@ router.post("/setup", (req, res) => {
 });
 
 //Login route
-router.get('/login', checkSetup, setGeneral, (req, res) => {
+router.get('/login', CheckSetup, SetGeneral, (req, res) => {
   res.render('login', {
     general: res.general
   });
@@ -88,7 +89,7 @@ router.post('/login', (req, res, next) => {
 });
 
 // Logout
-router.get('/logout', checkSetup, (req, res) => {
+router.get('/logout', CheckSetup, (req, res) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   log.info(`User ${req.user.username} (${ip}) logged out.`)
 

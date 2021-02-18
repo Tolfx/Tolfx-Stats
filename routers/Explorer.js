@@ -5,9 +5,10 @@ const log = require("../lib/Loggers");
 const { File, Map } = require("../models/Explorer");
 const { GFS_find, GFS_DisplayImage, GFS_Remove, GFS_findOne } = require("../lib/FilesHandler")
 const upload = require("../lib/Storage");
-const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
+const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
 const Roles = require("../models/Roles");
 const cleanQuery = require('mongo-sanitize');
+const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
 /**
  * 
@@ -51,7 +52,7 @@ function checkReadPerm(map, req)
  * @GET /explorer
  * @description Default route for /explorer.
  */
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     Map.find().then(map => {
         return res.render("explorer/main-explorer", {
             general: res.general,
@@ -68,7 +69,7 @@ router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
  * @GET /explorer/map/:map_id
  * @description Views a specific map by id.
  */
-router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/map/:map_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
@@ -107,7 +108,7 @@ router.get("/map/:map_id", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) 
  * @GET /explorer/file/:file
  * @description Shows specific file by name, through a pipe.
  */
-router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/file/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let fileId = cleanQuery(req.params.file);
     File.findOne({ name: fileId }).then(async f => {
         if(f)
@@ -138,7 +139,7 @@ router.get("/file/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
  * @GET /explorer/view/:file
  * @description To view a file details etc.
  */
-router.get("/view/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) => {
+router.get("/view/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let fileId = cleanQuery(req.params.file)
     File.findOne({ name: fileId }).then(async f => {
         if(f)
@@ -171,7 +172,7 @@ router.get("/view/:file", checkSetup, ensureIsLoggedIn, setGeneral, (req, res) =
  * @POST /explorer/file/:file_id/remove
  * @description Removes a specific file by id. (only admin)
  */
-router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let fileId = cleanQuery(req.params.file_id)
     File.findOne({ _id: fileId }).then(f => {
         if(f) {
@@ -201,7 +202,7 @@ router.post("/file/:file_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, e
  * @POST /explorer/map/:map_id/remove
  * @description Removes a specific map and all is content. (only admin)
  */
-router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/map/:map_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
@@ -255,7 +256,7 @@ router.post("/map/:map_id/remove", checkSetup, ensureIsLoggedIn, setGeneral, ens
  * @POST /explorer/map/:map_id/edit/permission
  * @description Edits a map specific permission. (only admin)
  */
-router.post("/map/:map_id/edit/permission", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/map/:map_id/edit/permission", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(async map => {
         if(map) {
@@ -302,7 +303,7 @@ router.post("/map/:map_id/edit/permission", checkSetup, ensureIsLoggedIn, setGen
  * @description Edits a map.. not finished.. (only admin)
  * 
  */
-router.post("/map/:map_id/edit", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/map/:map_id/edit", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
@@ -322,7 +323,7 @@ router.post("/map/:map_id/edit", checkSetup, ensureIsLoggedIn, setGeneral, ensur
  * @POST /explorer/upload
  * @description Uploads a file to a specific mapid.
  */
-router.post("/upload", checkSetup, ensureIsLoggedIn, setGeneral, upload.single("file"), (req, res, next) => {
+router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, upload.single("file"), (req, res, next) => {
     function removeFile(fileId) { GFS_Remove(fileId).then(() => true).catch(e => { log.error(e); return false; }) };
     if(req.file) {
         let mapId = cleanQuery(req.body.mapId)
@@ -372,7 +373,7 @@ router.post("/upload", checkSetup, ensureIsLoggedIn, setGeneral, upload.single("
  * @POST /explorer/create/map
  * @description Creates a new map. (only admin)
  */
-router.post("/create/map", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, ensureIsAdmin, (req, res) => {
+router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, ensureIsAdmin, (req, res) => {
     let mapName = cleanQuery(req.body.name);
     if(mapName)
     {

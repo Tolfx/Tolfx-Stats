@@ -6,18 +6,19 @@ const log = require("../lib/Loggers");
 const { Tables, TablesData } = require("../models/Tables");
 const Logging = require("../models/Logging");
 const Roles = require("../models/Roles");
-const { checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin } = require("../configs/Authenticate");
+const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
 const Pagination = require("../lib/Pagination");
 const cleanQuery = require('mongo-sanitize');
+const { CheckSetup, SetGeneral } = require("../middlewares/Main");
 
-router.get("/", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, async (req, res) => {
+router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
         general: res.general,
         allUsers: await User.find()
     });
 });
 
-router.get("/logs", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, Pagination(Logging, true), (req, res) => {
+router.get("/logs", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, Pagination(Logging, true), (req, res) => {
     let pages = res.paginatedPage;
     res.render("admin/logs", {
         general: res.general,
@@ -25,7 +26,7 @@ router.get("/logs", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, Pag
     });
 });
 
-router.post("/add-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/add-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let { name } = req.body;
     name = cleanQuery(name);
     if(name)
@@ -54,7 +55,7 @@ router.post("/add-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
     }
 });
 
-router.post("/add-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/add-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let { password, password2, email, username, role } = req.body;
 
     if(!email) {
@@ -119,7 +120,7 @@ router.post("/add-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin
     });
 });
 
-router.post("/remove-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/remove-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let { user } = req.body;
     user = cleanQuery(user);
     if(user)
@@ -154,7 +155,7 @@ router.post("/remove-user", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAd
     }
 });
 
-router.post("/remove-role", checkSetup, ensureIsLoggedIn, setGeneral, ensureIsAdmin, (req, res) => {
+router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let { role } = req.body;
     role = cleanQuery(role);
     if(role)
