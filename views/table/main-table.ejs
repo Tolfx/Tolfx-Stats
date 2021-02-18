@@ -1,7 +1,11 @@
 <div class="container">
+    <% let indexRole = general.roles.map(e => {return e.name}).indexOf(general.user.role) %>
     <% if (tables.length > 0) { %>
         <h1 class="text-center mt-5">Tables</h1>
-        <a class="btn btn-block btn-warning" href="/table/create">Create new table</a>
+        <a class="btn btn-block btn-warning 
+        <% if (!general.roles[indexRole].canCreate) { %>
+            disabled
+        <% } %>" href="/table/create">Create new table</a>
         <div class="bg-primary rounded p-2 mt-2">
             <% for( let i = 0; i < tables.length; i++ ) { %>
                 <div class="btn-toolbar m-3">
@@ -10,11 +14,7 @@
                 </div>
             <% } %>
         </div>
-    <% } else { %>
-        <div class="text-center" style="margin-top: 20%;">
-            <a href="/table/create" class="btn bg-danger text-white">No tables found... create one..</a>
-        </div>
-    <% } %> 
+    <% } %>
 </div>
 
 <!-- Modal for permissions -->

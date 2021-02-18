@@ -1,4 +1,5 @@
 <div class="container mt-3">
+    <% let indexRole = general.roles.map(e => {return e.name}).indexOf(general.user.role) %> 
     <h1 class="text-center"><%= map.name %></h1>
     <div class="text-right">
         <button 
@@ -6,7 +7,7 @@
             class="btn btn-warning" 
             data-toggle="modal" 
             data-target="#addFile"
-            <%= map.writeRoles.includes(general.user.role) ? '' : 'disabled' %>
+            <%= map.writeRoles.includes(general.user.role) || general.roles[indexRole].root || general.roles[indexRole].canCreate ? '' : 'disabled' %>
         ><i class="fas fa-3x fa-plus"></i></button>
     </div>    
     <% if (files.length > 0) { %>
@@ -27,7 +28,7 @@
                     <button 
                     class="btn p-1 btn-danger" 
                     onclick="removeFile('<%= file._id %>')"
-                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    <%= general.user.role === 'admin' || general.roles[indexRole].root ||general.roles[indexRole].canRemove ? '' : 'disabled' %> 
                     >Remove</button>
                     </div>
                 </div>

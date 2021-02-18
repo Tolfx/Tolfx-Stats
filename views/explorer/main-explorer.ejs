@@ -1,11 +1,12 @@
 <div class="container">
+    <% let indexRole = general.roles.map(e => {return e.name}).indexOf(general.user.role) %> 
     <div class="text-right">
         <button 
             title="Create new map" 
             class="btn btn-warning" 
             data-toggle="modal" 
             data-target="#removeTable"
-            <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+            <%= general.user.role === 'admin' || general.roles[indexRole].root || general.roles[indexRole].canCreate ? '' : 'disabled' %> 
         >
             <i class="fas fa-3x fa-folder-plus"></i>
         </button>
@@ -23,18 +24,24 @@
                     </p>
                     <hr>
                     <a 
-                    class="btn p-1 btn-success <%= map.readRoles.includes(general.user.role) ? '' : 'disabled' %> " 
+                    class="btn p-1 btn-success <%= map.readRoles.includes(general.user.role) || general.roles[indexRole].root ? '' : 'disabled' %> " 
                     href="/explorer/map/<%= map._id %>"
-                    <%= map.readRoles.includes(general.user.role) ? '' : 'aria-disabled="true"' %>
+                    <%= map.readRoles.includes(general.user.role) || general.roles[indexRole].root ? '' : 'aria-disabled="true"' %>
                     >View</a>
                     <button 
                     class="btn p-1 btn-warning" 
-                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    <%= general.user.role === 'admin' || general.roles[indexRole].root ? '' : 'disabled' %> 
                     onclick="permissionsMap('<%= map.name %>', '<%= map._id %>', '<%= map.readRoles %>', '<%= map.writeRoles %>', '<%= general.user.role %>', '<%= general.roles.map(e => e.name) %>')"
                         >Edit</button>
                     <button
                     class="btn p-1 btn-danger"
-                    <%= general.user.role === 'admin' ? '' : 'disabled' %> 
+                    <% if (general.user.role === 'admin' || general.roles[indexRole].root || map.readRoles.includes(general.user.role)) { %>
+                        <% if (!general.roles[indexRole].canRemove) { %>
+                            disabled
+                        <% } %>
+                    <% } else { %>
+                        disabled
+                    <% } %> 
                     onclick="removeMap('<%= map._id %>')">
                     Remove</button>
                     </div>

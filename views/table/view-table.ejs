@@ -1,9 +1,10 @@
 <div class="container">
+    <% let indexRole = general.roles.map(e => {return e.name}).indexOf(general.user.role) %>
     <h2 class="text-center mt-5"><%= _table.tableName %></h2>
     <div class="shadow p-3 rounded">
     <a href="/table/add/<%= _table._id %>" class="btn btn-primary <%= _table.writeRoles.includes(general.user.role) ? '' : 'disabled' %>">Create new data</a>
     <a href="/table/edit/table/<%= _table._id %>" class="btn btn-primary <%= _table.writeRoles.includes(general.user.role) ? '' : 'disabled' %>">Edit table</a>
-    <button class="text-right btn btn-danger<%= general.user.role == "admin" ? '' : 'disabled' %>" <%= general.user.role == "admin" ? 'data-toggle=modal data-target=#removeTable' : '' %> >Remove table</button>
+    <button class="text-right btn btn-danger<%= _table.writeRoles.includes(general.user.role) || general.roles[indexRole].root || general.roles[indexRole].canRemove ? '' : 'disabled' %>" <%= _table.writeRoles.includes(general.user.role) || general.roles[indexRole].root || general.roles[indexRole].canRemove ? 'data-toggle=modal data-target=#removeTable' : '' %> >Remove table</button>
     <table class="table rounded shadow table-bordered table-striped">
         <div class="input-group-sm mt-4">
             <input id="searchTable" class="form-control mr-sm-2 " type="search" placeholder="Search" aria-label="Search">
