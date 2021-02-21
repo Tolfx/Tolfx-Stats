@@ -1,6 +1,6 @@
 {
   "name": "Tolfx-Stats",
-  "version": "1.7.2",
+  "version": "1.7.6",
   "description": "",
   "main": "server.js",
   "scripts": {

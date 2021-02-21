@@ -104,7 +104,7 @@ app.use("/", require("./routers/Main"));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, log.verbos(`Server started on port ${PORT}`, log.trace()));
+app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
 app.get('*', setGeneral, (req, res) => {
     res.status(404).render('partials/notFound', {
