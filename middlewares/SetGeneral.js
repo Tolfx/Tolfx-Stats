@@ -30,6 +30,8 @@ async function setGeneral (req, res, next) {
 
     data.roles = await Roles.find() ? await Roles.find() : [];
 
+    data.settings = await Settings.find() ? await Settings.find() : [];
+
     res.general = data;
     next();
 }
