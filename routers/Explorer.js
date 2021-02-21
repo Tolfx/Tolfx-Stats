@@ -21,7 +21,7 @@ router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
             maps: map
         });
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -43,7 +43,7 @@ router.get("/map/:map_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
                     files: f
                 });
             }).catch(e => {
-                log.error(e);
+                log.error(e, log.trace());
                 req.flash("error_msg", "Something went wrong.. try again later.")
                 return res.redirect("back");
             })
@@ -52,7 +52,7 @@ router.get("/map/:map_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
             return res.redirect("back");            
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -149,7 +149,7 @@ router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, C
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.error(e));
         req.flash("error_msg", "Something went wrong.. please try again later.");
         return res.redirect("back");
     });
@@ -194,7 +194,7 @@ router.post("/map/:map_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, Can
                     return res.redirect("back");
                 }
             }).catch(e => {
-                log.error(e);
+                log.error(e, log.trace());
                 req.flash("error_msg", "Something went wrong.. try again later.")
                 return res.redirect("back");
             })
@@ -203,7 +203,7 @@ router.post("/map/:map_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, Can
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -249,7 +249,7 @@ router.post("/map/:map_id/edit/permission", CheckSetup, ensureIsLoggedIn, SetGen
             return res.redirect("back");            
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -270,7 +270,7 @@ router.post("/map/:map_id/edit", CheckSetup, ensureIsLoggedIn, SetGeneral, ensur
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -281,7 +281,7 @@ router.post("/map/:map_id/edit", CheckSetup, ensureIsLoggedIn, SetGeneral, ensur
  * @description Uploads a file to a specific mapid.
  */
 router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, CanWrite(Map, '_id', 'body', 'mapId'), upload.single("file"), (req, res, next) => {
-    function removeFile(fileId) { GFS_Remove(fileId).then(() => true).catch(e => { log.error(e); return false; }) };
+    function removeFile(fileId) { GFS_Remove(fileId).then(() => true).catch(e => { log.error(e, log.trace()); return false; }) };
     if(req.file) {
         let mapId = cleanQuery(req.body.mapId)
         if(mapId) {
@@ -341,7 +341,7 @@ router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, CanCreate(R
                 return res.redirect("back");
             }
         }).catch(e => {
-            log.error(e);
+            log.error(e, log.trace());
             req.flash("error_msg", "Something went wrong.. try again later.")
             return res.redirect("back");
         });

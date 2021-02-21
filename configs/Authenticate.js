@@ -54,7 +54,7 @@ module.exports = {
         Settings.find().then(s => {
             if(s.length <= 0)
             {
-                log.error("No settings.. creating one");
+                log.error("No settings.. creating one", log.trace());
                 new Settings().save();
             }
         });
@@ -62,7 +62,7 @@ module.exports = {
         Roles.findOne({ name: 'admin' }).then(r => {
             if(!r)
             {
-                log.error(`Role admin has not been created.. creating one.`);
+                log.error(`Role admin has not been created.. creating one.`, log.trace());
                 new Roles({
                     name: 'admin'
                 }).save();

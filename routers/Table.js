@@ -22,7 +22,7 @@ router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
             general: res.general
         });
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         res.redirect("back");
     });
 });
@@ -63,7 +63,7 @@ router.post("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, CanCreate(Roles
                     req.flash("success_msg", "Table created!");
                     res.redirect(`/table/view/${t._id}`);
                 }).catch(e => {
-                    log.error(e);
+                    log.error(e, log.trace());
                     req.flash("error_msg", "An error appeared.. please try again.");
                     res.redirect("back");
                 });
@@ -74,7 +74,7 @@ router.post("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, CanCreate(Roles
                 res.redirect(`/table/edit/table/${table._id}`);
             }
         }).catch(e => {
-            log.error(e);
+            log.error(e, log.trace());
             res.redirect("back");
         });
     }
@@ -103,7 +103,7 @@ router.get("/add/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
             res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         res.redirect("back");
     });
 });
@@ -167,7 +167,7 @@ router.post("/add/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
                         log.verbos(`Created new table data from user ${req.user.username}`);
                         return res.redirect("/table/view/"+table._id);
                     }).catch(e => {
-                        log.error(e);
+                        log.error(e, log.trace());
                         return res.redirect("back");
                     });
                 }
@@ -177,7 +177,7 @@ router.post("/add/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -201,7 +201,7 @@ router.get("/view/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
                     _table: table
                 });
             }).catch(e => {
-                log.error(e);
+                log.error(e, log.trace());
                 req.flash("error_msg", "Something went wrong.. try again later.")
                 return res.redirect("back");
             });
@@ -210,7 +210,7 @@ router.get("/view/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -282,7 +282,7 @@ router.post("/edit/table/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
                 req.flash("success_msg", "Succesfully changed table");
                 return res.redirect("back");
             }).catch(e => {
-                log.error(e);
+                log.error(e, log.trace());
                 req.flash("error_msg", "Something went wrong.. try again later.")
                 return res.redirect("back");
             });
@@ -321,7 +321,7 @@ router.get("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, 
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -361,7 +361,7 @@ router.post("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req,
                                             req.flash("success_msg", "Succesfully changed row")
                                             return res.redirect("back");
                                         }).catch(e => {
-                                            log.error(e);
+                                            log.error(e, log.trace());
                                             req.flash("error_msg", "Something went wrong.. try again.");
                                             return res.redirect("back");
                                         });
@@ -391,7 +391,7 @@ router.post("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req,
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e);
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. try again later.")
         return res.redirect("back");
     });
@@ -454,7 +454,7 @@ router.post("/edit/permission/:table_id", CheckSetup, ensureIsLoggedIn, SetGener
                 return res.redirect("back");
             }
         }).catch(e => {
-            log.error(e);
+            log.error(e, log.trace());
             return res.redirect("back");
         })
     }

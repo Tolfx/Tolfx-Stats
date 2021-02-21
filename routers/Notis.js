@@ -60,7 +60,7 @@ router.post("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
                     req.flash("success_msg", "Notis made")
                     return res.redirect("/notis/edit/"+no._id);
                 }).catch(e => {
-                    log.error(e);
+                    log.error(e, log.trace());
                     res.redirect("back");
                 })
             } else {
@@ -136,7 +136,7 @@ router.post("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, r
                 req.flash("success_msg", "Succesfully changed notis.");
                 return res.redirect("back");
             }).catch(e => {
-                log.error(e);
+                log.error(e, log.trace());
                 req.flash("error_msg", "Something went wrong.. try again later.");
                 return res.redirect("back");
             })

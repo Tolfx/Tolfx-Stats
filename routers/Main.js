@@ -58,7 +58,7 @@ router.post("/setup", (req, res) => {
           bcrypt.genSalt(10, (err, salt) => {
             bcrypt.hash(password, salt, (err, hash) => {
               if(err)
-                log.error(err)
+                log.error(err, log.trace())
 
                 new User({
                   username: "admin",
@@ -74,7 +74,7 @@ router.post("/setup", (req, res) => {
             })
             
         } catch(err) {
-          log.error(err)
+          log.error(err, log.trace())
         }
       }
     }

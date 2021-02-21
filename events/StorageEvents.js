@@ -6,6 +6,6 @@ module.exports = (storage) => {
     });
     
     storage.on("streamError", (error, conf) => {
-        log.error(error)
+        log.error(error, log.trace())
     });
 }

@@ -147,7 +147,7 @@ function canRead(model, id, type, search, forward = true, warn = true, callback)
                 }
             });
         } catch (e) {
-            log.error(e);
+            log.error(e, log.trace());
             req.flash("error_msg", "Something went wrong.. try again later.")
             res.redirect("back");
         }
@@ -209,7 +209,7 @@ function canWrite(model, id, type, search, forward = true, warn = true, callback
             });
         } catch (e)
         {
-            log.error(e);
+            log.error(e, log.trace());
             req.flash("error_msg", "Something went wrong.. try again later.")
             return res.redirect("back");
         }
