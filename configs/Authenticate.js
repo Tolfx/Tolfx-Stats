@@ -12,7 +12,8 @@ module.exports = {
             //log.verbos(`${ip} (${req.user.username}) is viewing ${req.originalUrl}`)
             return next();
         }
-        log.verbos(`${ip} attempted to view ${req.originalUrl}`)
+        
+        log.warning(`${ip} attempted to view ${req.originalUrl}`)
         req.flash("error_msg", "Please login to view this.");
         return res.redirect("/login");
     },

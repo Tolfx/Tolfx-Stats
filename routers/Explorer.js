@@ -119,7 +119,7 @@ router.get("/view/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
         else
         {
             req.flash("error_msg", "Unable to find file");
-            return res.redirect("back");
+            return res.redirect("/explorer");
         }
     })
 
@@ -135,8 +135,9 @@ router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, C
         if(f) {
             GFS_Remove(f.fileInfo.id).then(async bf => {
                 if(bf) {
-                    await File.deleteOne({ _id: fileId })
-                    log.info(`File: ${f.fileInfo.originalname} was removed by user: ${req.user.username}`)
+                    await File.deleteOne({ _id: fileId });
+                    let mapName = (await Map.findOne({ _id: f.whichFolderId })).name
+                    log.info(`File: ${f.fileInfo.originalname} (${mapName}) was removed by user: ${req.user.username}`)
                     req.flash("success_msg", "Succesfully removed file");
                     return res.redirect("back");
                 } else {
