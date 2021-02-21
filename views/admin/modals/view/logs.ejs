@@ -1,8 +1,8 @@
-<style>
-
-</style>
-
 <div class="container ">
+    <button title="Remove all logs" 
+    class="btn btn-warning" 
+    onclick="removeLogs()"
+    >Remove all logs</button>
     <table class="table table-bordered table-striped table-dark table-fixed">
         <div class="input-group-sm mt-4">
             <div class="text-center">
@@ -56,4 +56,36 @@
             });
         });
     });
+</script>
+
+<div id="divRemoveLogs"></div>
+<script>
+    function removeLogs() {
+        document.querySelector("#divRemoveLogs").innerHTML = `<div class="modal fade" id="removeLogs" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">WARNING!!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/admin/drop-logs?_csrf=<%= _csrf %>" method="post">
+                <div class="modal-body">
+                Are you sure you want to remove all logs?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#removeLogs").modal('show');
+        });
+
+    };
 </script>

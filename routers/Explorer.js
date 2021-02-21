@@ -136,10 +136,10 @@ router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, C
             GFS_Remove(f.fileInfo.id).then(async bf => {
                 if(bf) {
                     await File.deleteOne({ _id: fileId });
-                    let mapName = (await Map.findOne({ _id: f.whichFolderId })).name
-                    log.info(`File: ${f.fileInfo.originalname} (${mapName}) was removed by user: ${req.user.username}`)
+                    let map = (await Map.findOne({ _id: f.whichFolderId }))
+                    log.info(`File: ${f.fileInfo.originalname} (${map.name}) was removed by user: ${req.user.username}`)
                     req.flash("success_msg", "Succesfully removed file");
-                    return res.redirect("back");
+                    return res.redirect(`/explorer/${map._id}`);
                 } else {
                     req.flash("error_msg", "Something went wrong.. please try again later.");
                     return res.redirect("back");

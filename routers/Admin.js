@@ -13,6 +13,7 @@ const { CheckSetup, SetGeneral, Pagination } = require("../middlewares/Main");
 const upload = require("../lib/Storage");
 const { GFS_DisplayImage } = require("../lib/FilesHandler");
 const fs = require("fs");
+const Log = require('../models/Logging');
 
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
@@ -143,6 +144,22 @@ router.post("/add-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin
           };
         };
     });
+});
+
+router.post("/drop-logs", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Log.deleteMany({}, (err) => {
+        if(err)
+        {
+            req.flash("error_msg", "Something went wrong when deleting the logs");
+            return res.redirect("/admin");
+        }
+        else
+        {
+            req.flash("success_msg", "Logs has been removed");
+            setTimeout(() => log.info(`All logs has been cleared`), 3000);
+            return res.redirect("back");
+        }
+    })
 });
 
 router.post("/remove-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
