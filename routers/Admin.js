@@ -48,7 +48,7 @@ router.get("/logo", CheckSetup, SetGeneral, (req, res) => {
 });
 
 router.post("/add-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
-    let { name } = req.body;
+    let { name, p_remove, p_create, root } = req.body;
     name = cleanQuery(name);
     if(name)
     {
@@ -56,8 +56,12 @@ router.post("/add-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin
             if(!ro)
             {
                 new Roles({
-                    name
+                    name,
+                    canCreate: p_create == 'on' ? true : false,
+                    canRemove: p_remove == 'on' ? true : false,
+                    root: root == 'on' ? true : false
                 }).save().then(nr => {
+                    log.info(`A new user has been created with name: ${name}${root == 'on' ? ', is root' : ''}`)
                     req.flash("success_msg", "Succesfuly made role");
                     return res.redirect("back");
                 })
@@ -116,7 +120,7 @@ router.post("/add-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin
                     bcrypt.hash(password, salt, (err, hash) => 
                     {
                         if(err)
-                            log.error(err)
+                            log.error(err, log.trace())
             
                         new User({
                             username: username,
@@ -132,7 +136,7 @@ router.post("/add-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin
                 });
                 
             } catch(err) {
-              log.error(err)
+              log.error(err, log.trace())
               req.flash("error_msg", "An error accured")
               return res.redirect("back");
             };
@@ -153,7 +157,7 @@ router.post("/remove-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                     req.flash("success_msg", "User deleted");
                     return res.redirect("back");
                 }).catch(e => {
-                    log.error(e)
+                    log.error(e, log.trace())
                     req.flash("error_msg", "Something went wrong.. try again later.");
                     return res.redirect("back");
                 })
@@ -164,7 +168,7 @@ router.post("/remove-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                 return res.redirect("back");
             }
         }).catch(e => {
-            log.error(e)
+            log.error(e, log.trace())
             req.flash("error_msg", "Something went wrong.. try again later.");
             return res.redirect("back");
         })
@@ -191,7 +195,7 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                             req.flash("success_msg", "Role deleted");
                             return res.redirect("back");
                         }).catch(e => {
-                            log.error(e)
+                            log.error(e, log.trace())
                             req.flash("error_msg", "Something went wrong.. try again later.");
                             return res.redirect("back");
                         });                        
@@ -202,7 +206,7 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                         return res.redirect("back");
                     }
                 }).catch(e => {
-                    log.error(e)
+                    log.error(e, log.trace())
                     req.flash("error_msg", "Something went wrong.. try again later.");
                     return res.redirect("back");                    
                 })
@@ -213,7 +217,7 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                 return res.redirect("back");
             }
         }).catch(e => {
-            log.error(e)
+            log.error(e, log.trace())
             req.flash("error_msg", "Something went wrong.. try again later.");
             return res.redirect("back");
         })
@@ -243,7 +247,7 @@ router.post("/change-name", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
             else
             {
                 //There is none or more
-                log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                log.error(`There are more than 1 setting, one needs to be removed to make this functional`, log.trace());
                 req.flash("error_msg", "Something went wrong.. please make an issue at github");
                 return res.redirect("back");
             }
@@ -274,7 +278,7 @@ router.post("/change-url", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin,
             else
             {
                 //There is none or more
-                log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                log.error(`There are more than 1 setting, one needs to be removed to make this functional`, log.trace());
                 req.flash("error_msg", "Something went wrong.. please make an issue at github");
                 return res.redirect("back");
             }
@@ -308,7 +312,7 @@ router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
                 else
                 {
                     //There is none or more
-                    log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                    log.error(`There are more than 1 setting, one needs to be removed to make this functional`, log.trace());
                     req.flash("error_msg", "Something went wrong.. please make an issue at github");
                     return res.redirect("back");
                 }

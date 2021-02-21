@@ -12,7 +12,20 @@
                 <div class="modal-body">
                     <div class="form m-2">
                         <label for="name">Name</label>
-                        <input type="name" name="name" class="form-control" id="name" placeholder="Role Name">
+                        <input type="name" name="name" class="form-control" id="name" placeholder="Role name">
+                    </div>
+                    <h5>Permissions</h5>
+                    <div class="form-check m-2">
+                        <input type="checkbox" name="p_create" class="form-check-input">
+                        <label class="form-check-label" for="name">Create</label>
+                    </div>
+                    <div class="form-check m-2">
+                        <input type="checkbox" name="p_remove" class="form-check-input" >
+                        <label class="form-check-label" for="name">Remove</label>
+                    </div>
+                    <div class="form-check m-2">
+                        <input type="checkbox" name="root" class="form-check-input">
+                        <label class="form-check-label" for="name">Root</label>
                     </div>
                 </div>
                 <div class="modal-footer">
