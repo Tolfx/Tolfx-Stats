@@ -4,11 +4,15 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const log = require("../lib/Loggers");
 const { Tables, TablesData } = require("../models/Tables");
+const Settings = require("../models/Settings");
 const Logging = require("../models/Logging");
 const Roles = require("../models/Roles");
 const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
 const cleanQuery = require('mongo-sanitize');
 const { CheckSetup, SetGeneral, Pagination } = require("../middlewares/Main");
+const upload = require("../lib/Storage");
+const { GFS_DisplayImage } = require("../lib/FilesHandler");
+const fs = require("fs");
 
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
@@ -19,10 +23,28 @@ router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (
 
 router.get("/logs", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, Pagination(Logging, true), (req, res) => {
     let pages = res.paginatedPage;
-    res.render("admin/logs", {
+    res.render("admin/modals/view/logs", {
         general: res.general,
         pages: pages
     });
+});
+
+router.get("/logo", CheckSetup, SetGeneral, (req, res) => {
+    Settings.find().then(s => {
+        GFS_DisplayImage(s[0].logo).then(i => {
+            i.pipe(res);
+        }).catch(e => {
+            log.warning(`No logo has been set yet, using default..`);
+            let dir = process.cwd();
+            dir += "/public/TX-Small.png";
+
+            fs.readFile(dir, (err, data) => {
+                if(err)
+                    return res.status(404);
+                fs.createReadStream(dir).pipe(res);
+            });
+        })
+    })
 });
 
 router.post("/add-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
@@ -199,6 +221,108 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
     else
     {
         req.flash("error_msg", "Please define role in body");
+        return res.redirect("back");
+    }
+});
+
+router.post("/change-name", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+    let newName = cleanQuery(req.body.name);
+    if(newName)
+    {
+        Settings.find().then(s => {
+            if(s.length === 1)
+            {
+                let oldName = s[0].name;
+                s[0].name = newName;
+                s[0].save().then(() => {
+                    log.info(`Server has changed name to: ${newName}, old name: ${oldName}`);
+                    req.flash("success_msg", "Changes made");
+                    return res.redirect("back");
+                });
+            }
+            else
+            {
+                //There is none or more
+                log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                req.flash("error_msg", "Something went wrong.. please make an issue at github");
+                return res.redirect("back");
+            }
+        });  
+    }
+    else
+    {
+        req.flash("error_msg", "Please define the new name");
+        return res.redirect("back");
+    }
+});
+
+router.post("/change-url", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+    let newUrl = cleanQuery(req.body.url);
+    if(newUrl)
+    {
+        Settings.find().then(s => {
+            if(s.length === 1)
+            {
+                let oldURL = s[0].url;
+                s[0].url = newUrl;
+                s[0].save().then(() => {
+                    log.info(`Server has changed url to: ${newUrl}, old name: ${oldURL}`);
+                    req.flash("success_msg", "Changes made");
+                    return res.redirect("back");
+                });
+            }
+            else
+            {
+                //There is none or more
+                log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                req.flash("error_msg", "Something went wrong.. please make an issue at github");
+                return res.redirect("back");
+            }
+        });  
+    }
+    else
+    {
+        req.flash("error_msg", "Please define the new URL");
+        return res.redirect("back");
+    }
+});
+
+router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, upload.single('file'), (req, res) => {
+    let newLogo = req.file;
+    let regexImage = /jpeg|gif|jpg|jpeg|png/g;
+    if(newLogo)
+    {
+        if(newLogo.contentType.match(regexImage))
+        {
+            Settings.find().then(s => {
+                if(s.length === 1)
+                {
+                    let oldLogo = s[0].logo;
+                    s[0].logo = newLogo.filename;
+                    s[0].save().then(() => {
+                        log.info(`Server has changed url to: ${newLogo.filename}, old logo: ${oldLogo}`);
+                        req.flash("success_msg", "Changes made");
+                        return res.redirect("back");
+                    });
+                }
+                else
+                {
+                    //There is none or more
+                    log.error(`There are more than 1 setting, one needs to be removed to make this functional`);
+                    req.flash("error_msg", "Something went wrong.. please make an issue at github");
+                    return res.redirect("back");
+                }
+            });  
+        }
+        else
+        {
+            req.flash("error_msg", "Only images are allowed");
+            return res.redirect("back");
+        }
+    }
+    else
+    {
+        req.flash("error_msg", "Please define the new logo");
         return res.redirect("back");
     }
 });
