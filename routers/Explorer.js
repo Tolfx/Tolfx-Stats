@@ -318,7 +318,7 @@ router.post("/upload", CheckSetup, ensureIsLoggedIn, SetGeneral, CanWrite(Map, '
                         fileInfo: req.file,
                         hasPassword: false
                     }).save().then(f => {
-                        log.info(`New file uploaded by: ${req.user.username}`)
+                        log.info(`New file uploaded by: ${req.user.username}, Filename: (${req.file.filename})`)
                         req.flash("success_msg", "File created");
                         return res.redirect("back");
                     })
@@ -356,7 +356,7 @@ router.post("/create/map", CheckSetup, ensureIsLoggedIn, SetGeneral, CanCreate(R
                     writeRoles: [`${req.user.role}`, 'admin'],
                     readRoles: [`${req.user.role}`, 'admin'],
                 }).save().then(m => {
-                    log.info(`${mapName} was created by: ${req.user.username}`)
+                    log.info(`New map: ${mapName} was created by: ${req.user.username}`)
                     req.flash("success_msg", `Added new map ${mapName}`);
                     return res.redirect("back");
                 })
