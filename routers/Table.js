@@ -299,11 +299,12 @@ router.post("/edit/table/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
  */
 router.get("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res, next) => {
     let rowDataId = cleanQuery(req.params.row_id);
-    TablesData.findOne({ _id: rowDataId }).then(async row => {
+    TablesData.findOne({ _id: rowDataId }).then(row => {
         if(row) {
-            CanWrite(Tables, '_id', 'none', row.tableConnectId, false, false, (e) => {
+            CanWrite(Tables, '_id', 'none', row.tableConnectId, false, false, async (e) => {
                 if(e)
                 {
+                    let t = await Tables.findOne({ _id: row.tableConnectId });
                     return res.render("table/edit-row", {
                         general: res.general,
                         row: row,
