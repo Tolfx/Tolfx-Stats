@@ -343,7 +343,7 @@ router.post("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req,
                     {
                         let OLD_ROW = row.tableData.map(e => e.value);
                         let NEW_ROW = req.body.row;
-                        if(!NEW_ROW.length >= 100)
+                        if(NEW_ROW.length <= 100)
                         {
                             if(OLD_ROW != NEW_ROW) {
                                 //If new rows..
@@ -360,7 +360,7 @@ router.post("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req,
                                         row.save().then(r => {
                                             log.verbos(`Table: ${t.tableName} has a row that has been edited.. (${r._id} | ${r.tableRow})`)
                                             req.flash("success_msg", "Succesfully changed row")
-                                            return res.redirect("back");
+                                            return res.redirect("/table/view/"+t._id);
                                         }).catch(e => {
                                             log.error(e, log.trace());
                                             req.flash("error_msg", "Something went wrong.. try again.");
