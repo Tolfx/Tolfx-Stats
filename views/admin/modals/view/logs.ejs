@@ -21,6 +21,7 @@
             <th scope="col">Message</th>
             <th scope="col">Type</th>
             <th scope="col">Date</th>
+            <th scope="col">Time</th>
           </tr>
         </thead>
         <tbody id="myTable">
@@ -40,7 +41,8 @@
                     <th scope="row"><%= i+1 %></th>
                     <td><%= bigResult[i].message %></td>
                     <td><%= bigResult[i].type %></td>
-                    <td><%= bigResult[i].createdAt.toLocaleDateString() %></td>
+                    <td><%= bigResult[i].createdAt.split(" ")[0] %></td>
+                    <td><%= bigResult[i].createdAt.split(" ")[1] %></td>
                     </tr>
             <% } %>
         </tbody>
