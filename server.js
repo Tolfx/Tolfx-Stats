@@ -15,7 +15,7 @@ const { ensureIsLoggedIn, ensureIsAdmin } = require("./configs/Authenticate");
 const rateLimit = require("express-rate-limit");
 const csrf = require("csurf");
 const cookieParser = require('cookie-parser');
-const { Version } = require("./Config");
+const { Version, getNewVersion } = require("./Config");
 
 const is_prod = process.env.ISPROD === "true" ? true : false;
 const app = express();
@@ -77,7 +77,17 @@ app.use((req, res, next) => {
     //Version
     res.locals.version = Version;
 
-    next();
+    res.locals.newVersion = '';
+
+    getNewVersion().then(e => {
+        if(Version != e.version)
+        {
+            res.locals.newVersion = e.version;
+        }
+        next();
+    }).catch(e => {
+        next()
+    })
 });
 
 // Make the token available to all views
@@ -111,6 +121,17 @@ app.get('*', SetGeneral, ensureIsLoggedIn, (req, res) => {
     res.status(404).render('partials/notFound', {
         general: res.general
     });
+});
+
+//Check if any new updates
+getNewVersion().then(e => {
+    if(e)
+    {
+        if(Version != e.version)
+        {
+            log.warning(`There is a new version (${e.version}) avaiable to download`);
+        }
+    }
 });
 
 //If in a github action.. exit after 1 min.

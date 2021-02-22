@@ -1,6 +1,6 @@
 {
   "name": "Tolfx-Stats",
-  "version": "1.7.9",
+  "version": "1.8.1",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -24,6 +24,7 @@
     "express-ejs-layouts": "^2.5.0",
     "express-rate-limit": "^5.2.5",
     "express-session": "^1.17.1",
+    "get-repo-package-json": "^2.0.0",
     "gridfs-stream": "^1.1.1",
     "install": "^0.13.0",
     "jsdom": "^16.4.0",

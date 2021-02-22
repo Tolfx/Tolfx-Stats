@@ -199,8 +199,11 @@
                   <div class="form-inline">
                       <a  class="btn btn-success p-1 m-1" href="/admin">Admin Panel</a>
                   </div>
-                <% } %>
+                <% } %> 
                 <a class="btn btn-danger p-1 m-1" href="/logout">Logout</a>
+                <% if (newVersion != "") { %>
+                <a href="https://github.com/Tolfx/Tolfx-Stats" target="_blank"><i title="A new version: <%= newVersion %>" style="color: rgb(223, 214, 98);" class="fas fa-3x fa-exclamation-triangle"></i></a>
+                <% } %>
               </nav>
         </div>
     <% } %>
