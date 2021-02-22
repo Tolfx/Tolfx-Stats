@@ -1,4 +1,4 @@
-<div class="container ">
+<div class="container">
     <button title="Remove all logs" 
     class="btn btn-warning" 
     onclick="removeLogs()"
@@ -39,7 +39,7 @@
                     table-active
                 <% } %> ">
                     <th scope="row"><%= i+1 %></th>
-                    <td><%= bigResult[i].message %></td>
+                    <td title="<%= bigResult[i].message %>" class="text-truncate" style="max-width: 700px;"><%= bigResult[i].message %></td>
                     <td><%= bigResult[i].type %></td>
                     <td><%= bigResult[i].createdAt.split(" ")[0] %></td>
                     <td><%= bigResult[i].createdAt.split(" ")[1] %></td>

@@ -164,7 +164,7 @@ router.post("/add/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
                         tableRow: table.tableName,
                         tableConnectId: table._id
                     }).save().then(newT => {
-                        log.verbos(`Created new table data from user ${req.user.username}`);
+                        log.info(`Created new table data from user ${req.user.username}`);
                         return res.redirect("/table/view/"+table._id);
                     }).catch(e => {
                         log.error(e, log.trace());
@@ -279,6 +279,7 @@ router.post("/edit/table/:table_id", CheckSetup, ensureIsLoggedIn, SetGeneral,
             }
 
             table.save().then(newT => {
+                log.info(`Table "${table.tableName}" has been modified by user: ${req.user.username}`)
                 req.flash("success_msg", "Succesfully changed table");
                 return res.redirect("back");
             }).catch(e => {
@@ -358,7 +359,7 @@ router.post("/edit/row/:row_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req,
                                     if(i+1 == OLD_ROW.length) {
                                         row.markModified('tableData');
                                         row.save().then(r => {
-                                            log.verbos(`Table: ${t.tableName} has a row that has been edited.. (${r._id} | ${r.tableRow})`)
+                                            log.info(`Table: ${t.tableName} has a row that has been edited.. (${r._id} | ${r.tableRow})`)
                                             req.flash("success_msg", "Succesfully changed row")
                                             return res.redirect("/table/view/"+t._id);
                                         }).catch(e => {
