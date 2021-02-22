@@ -10,10 +10,11 @@ const flash = require('connect-flash');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
-const { SetGeneral } = require("./middlewares/Main")
+const { SetGeneral } = require("./middlewares/Main");
+const { ensureIsLoggedIn, ensureIsAdmin } = require("./configs/Authenticate");
 const rateLimit = require("express-rate-limit");
 const csrf = require("csurf");
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const { Version } = require("./Config");
 
 const is_prod = process.env.ISPROD === "true" ? true : false;
@@ -106,7 +107,7 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
-app.get('*', SetGeneral, (req, res) => {
+app.get('*', SetGeneral, ensureIsLoggedIn, (req, res) => {
     res.status(404).render('partials/notFound', {
         general: res.general
     });
