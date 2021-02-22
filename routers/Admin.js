@@ -45,6 +45,17 @@ router.get("/logo", CheckSetup, SetGeneral, (req, res) => {
                 fs.createReadStream(dir).pipe(res);
             });
         })
+    }).catch(e => {
+        log.error(e, log.trace());
+        log.warning(`There was an error while getting settings, setting default`);
+        let dir = process.cwd();
+        dir += "/public/TX-Small.png";
+
+        fs.readFile(dir, (err, data) => {
+            if(err)
+                return res.status(404);
+            fs.createReadStream(dir).pipe(res);
+        });
     })
 });
 
@@ -171,6 +182,7 @@ router.post("/remove-user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
             if(u)
             {
                 User.deleteOne({ username: user }).then(du => {
+                    log.info(`User: ${user} was deleted.`)
                     req.flash("success_msg", "User deleted");
                     return res.redirect("back");
                 }).catch(e => {
@@ -209,6 +221,7 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
                     if(!u)
                     {
                         Roles.deleteOne({ name: role }).then(dr => {
+                            log.info(`Role: ${role} was deleted`);
                             req.flash("success_msg", "Role deleted");
                             return res.redirect("back");
                         }).catch(e => {

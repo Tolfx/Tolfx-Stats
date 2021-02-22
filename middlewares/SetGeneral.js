@@ -33,6 +33,7 @@ async function setGeneral (req, res, next) {
     data.settings = await Settings.find() ? await Settings.find() : [];
 
     res.general = data;
+    
     next();
 }
 
