@@ -87,7 +87,11 @@ router.get("/file/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
             req.flash("error_msg", "Unable to find file");
             return res.redirect("back");
         }
-    })//catch me here
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
+    })
 });
 
 /**
@@ -121,8 +125,11 @@ router.get("/view/:file", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) =
             req.flash("error_msg", "Unable to find file");
             return res.redirect("/explorer");
         }
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
     })
-
 });
 
 /**
@@ -150,7 +157,7 @@ router.post("/file/:file_id/remove", CheckSetup, ensureIsLoggedIn, SetGeneral, C
             return res.redirect("back");
         }
     }).catch(e => {
-        log.error(e, log.error(e));
+        log.error(e, log.trace());
         req.flash("error_msg", "Something went wrong.. please try again later.");
         return res.redirect("back");
     });
@@ -258,14 +265,31 @@ router.post("/map/:map_id/edit/permission", CheckSetup, ensureIsLoggedIn, SetGen
 
 /**
  * @POST /explorer/map/:map_id/edit
- * @description Edits a map.. not finished.. (only admin)
+ * @description Edits a map name (for now) (only admin)
  * 
  */
 router.post("/map/:map_id/edit", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let mapId = cleanQuery(req.params.map_id)
     Map.findOne({ _id: mapId }).then(map => {
         if(map) {
-            
+            let { name } = req.body;
+            let oldName = name;
+
+            if(map.name != name)
+            {
+                map.name = name
+            }
+
+            map.save().then(() => {
+                log.info(`Map: ${oldName} changed name to: ${map.name}.`);
+                req.flash("success_msg", "Changes made");
+                return res.redirect("back");
+            }).catch(e => {
+                log.error(e, log.trace());
+                req.flash("error_msg", "Something went wrong.. try again later.")
+                return res.redirect("back");
+            })
+
         } else {
             req.flash("error_msg", "Unable to find map");
             return res.redirect("back");

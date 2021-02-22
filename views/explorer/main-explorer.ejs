@@ -130,7 +130,16 @@
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-warning">Submit</button>
+                                    </div>
+                                </form>
+
+                                <form action="/explorer/map/${mapId}/edit?_csrf=<%= _csrf %>" method="POST">
+                                    <div class="modal-body">
+                                        <label>Name</label>
+                                        <input class="form-control" name="name" type="text">
+                                    </div>
+                                    <div class="modal-footer">
                                         <button type="submit" class="btn btn-warning">Submit</button>
                                     </div>
                                 </form>
