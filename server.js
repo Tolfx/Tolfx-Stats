@@ -68,7 +68,7 @@ app.use(csrf({ cookie: true }));
 app.use(flash());
 
 // Global variables
-app.use(function (req, res, next) {
+app.use((req, res, next) => {
     res.locals.success_msg = req.flash('success_msg');
     res.locals.error_msg = req.flash('error_msg');
     res.locals.error = req.flash('error');
@@ -80,7 +80,7 @@ app.use(function (req, res, next) {
 });
 
 // Make the token available to all views
-app.use(function (req, res, next){
+app.use((req, res, next) => {
     res.locals._csrf = req.csrfToken();
     next();
 });
