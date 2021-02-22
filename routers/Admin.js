@@ -11,9 +11,11 @@ const { ensureIsLoggedIn, ensureIsAdmin } = require("../configs/Authenticate");
 const cleanQuery = require('mongo-sanitize');
 const { CheckSetup, SetGeneral, Pagination } = require("../middlewares/Main");
 const upload = require("../lib/Storage");
-const { GFS_DisplayImage } = require("../lib/FilesHandler");
+const { GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler");
 const fs = require("fs");
 const Log = require('../models/Logging');
+
+let G_WarnedLogo = false;
 
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
@@ -35,7 +37,7 @@ router.get("/logo", CheckSetup, SetGeneral, (req, res) => {
         GFS_DisplayImage(s[0].logo).then(i => {
             i.pipe(res);
         }).catch(e => {
-            log.warning(`No logo has been set yet, using default..`);
+            G_WarnedLogo ? log.warning(`No logo has been set yet, using default..`) : '';
             let dir = process.cwd();
             dir += "/public/TX-Small.png";
 
@@ -333,7 +335,12 @@ router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
                 {
                     let oldLogo = s[0].logo;
                     s[0].logo = newLogo.filename;
-                    s[0].save().then(() => {
+                    s[0].save().then(async () => {
+                        if(!oldLogo === '')
+                        {
+                            await GFS_Remove(oldLogo);
+                        }
+
                         log.info(`Server has changed url to: ${newLogo.filename}, old logo: ${oldLogo}`);
                         req.flash("success_msg", "Changes made");
                         return res.redirect("back");
@@ -350,8 +357,10 @@ router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
         }
         else
         {
-            req.flash("error_msg", "Only images are allowed");
-            return res.redirect("back");
+            GFS_Remove(req.file.filename).then(() => {
+                req.flash("error_msg", "Only images are allowed");
+                return res.redirect("back");
+            });
         }
     }
     else

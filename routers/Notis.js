@@ -15,7 +15,7 @@ const { CheckSetup, SetGeneral } = require("../middlewares/Main");
  * @description Default route for /notis.
  */
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
-    Notis.find().then(n => {
+    Notis.find({ author: req.user.username }).then(n => {
         res.render("notis/main-notis", {
             general: res.general,
             notis: n
@@ -77,7 +77,7 @@ router.post("/create", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
  */
 router.get("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
-    Notis.findOne({ _id: notisId }).then(n => {
+    Notis.findOne({ _id: notisId, author: req.user.username }).then(n => {
         if(n) {
             res.render("notis/edit-notis", {
                 notis: n,
@@ -96,7 +96,7 @@ router.get("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, re
  */
 router.post("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
-    Notis.findOne({ _id: notisId }).then(n => {
+    Notis.findOne({ _id: notisId, author: req.user.username }).then(n => {
         if(n) {
             let { color, information, name, active, height, width } = req.body;
 
@@ -153,7 +153,7 @@ router.post("/edit/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, r
  */
 router.get("/remove/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis_id)
-    Notis.deleteOne({ _id: notisId }).then(n => {
+    Notis.deleteOne({ _id: notisId, author: req.user.username }).then(n => {
         log.warning(`${notisId} was deleted.`)
         req.flash("success_msg", "Succesfully removed notis");
         return res.redirect("/notis");
@@ -166,7 +166,7 @@ router.get("/remove/:notis_id", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, 
  */
 router.post("/save/:notis/pos/:x/:y", CheckSetup, ensureIsLoggedIn, SetGeneral, (req, res) => {
     let notisId = cleanQuery(req.params.notis)
-    Notis.findOne({ _id: notisId }).then(n => {
+    Notis.findOne({ _id: notisId, author: req.user.username }).then(n => {
         if(n) {
             let { x, y } = req.params;
             n.posX = x;
