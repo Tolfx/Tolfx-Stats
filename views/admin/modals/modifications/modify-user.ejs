@@ -1,0 +1,86 @@
+<!-- Modal for remove user -->
+<div class="modal fade" id="modifyUser" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modify a user.</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex flex-wrap">
+                    <% allUsers.forEach(user => { %>
+                        <div class="card shadow m-1 bg-info" style="width: 12rem;">
+                            <i class="far fa-5x fa-user text-center pt-3"></i>
+                            <div class="card-body">
+                            <p title="<%= user.username %>" class="text-monospace text-center card-text text-truncate">
+                                <button
+                                    data-dismiss="modal"
+                                    class="btn btn-danger p-1"
+                                    onclick="modifyUser('<%= user.username %>', '<%= user.role %>', '<%= user.email %>')"
+                                >
+                                    <%= user.username %>
+                                </button>
+                            </p>
+                            </div>
+                        </div>
+                    <% }) %>     
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="divModifyUser"></div>
+<script>
+    function modifyUser(username, role, email)
+    {
+        document.querySelector("#divModifyUser").innerHTML = `<div class="modal fade" id="modifyUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modify user: ${username}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/admin/modify-user?_csrf=<%= _csrf %>" method="post">
+                <div class="modal-body">
+                    <div class="form m-2">
+                        <label for="name">Username</label>
+                        <input class="form-control" name="newName" value="${username}" />
+                    </div>
+                    <div class="form m-2">
+                        <label for="name">Email</label>
+                        <input class="form-control" name="email" value="${email}" />
+                    </div>
+                    <div class="form m-2">
+                        <label for="name">Role</label>
+                        <select class="form-control" name="role">
+                            <option>${role}</option>
+                            <% general.roles.forEach(role => { %>
+                                <% if(!role.name === general.user.role) { %>
+                                    <option><%= role.name %></option>
+                                <% } %>
+                            <% }) %>
+                          </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Submit</button>
+                </div>
+            </form>
+        </div>
+        </div>
+    </div>`;
+
+        $(document).ready(function(){
+            $("#modifyUserModal").modal('show');
+        });
+    }
+</script>
