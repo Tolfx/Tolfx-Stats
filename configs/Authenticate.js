@@ -31,6 +31,8 @@ module.exports = {
         }
         else
         {
+            const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+            log.warning(`User: ${req.user.username} (${ip}) attempted to access admin.`)
             req.flash("error_msg", "Only admins are allowed.");
             return res.redirect("back");
         }
