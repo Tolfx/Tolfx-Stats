@@ -15,8 +15,9 @@
 
     <div class="rounded bg-primary shadow p-2 mt-3">
         <h2 class="text-center">Modification commands</h2>
-        <button class="btn btn-block btn-success" data-toggle="modal" data-target="#renameName">Rename name</button>
-        <button class="btn btn-block btn-success" data-toggle="modal" data-target="#changeLogo">Change logo</button>
+        <button class="btn btn-block btn-success" data-toggle="modal" data-target="#renameName">Rename server name</button>
+        <button class="btn btn-block btn-success" data-toggle="modal" data-target="#changeLogo">Change server logo</button>
+        <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#modifyUser">Modify user</button>
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeUser">Remove user</button>
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeRole">Remove role</button>
     </div>
@@ -30,5 +31,6 @@
 
 <%- include("./modals/modifications/rename-name")  %>
 <%- include("./modals/modifications/change-logo")  %>
+<%- include("./modals/modifications/modify-user")  %>
 <%- include("./modals/modifications/remove-role")  %>
 <%- include("./modals/modifications/remove-user")  %>
