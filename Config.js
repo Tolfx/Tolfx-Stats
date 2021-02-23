@@ -7,10 +7,21 @@ const getPackage = require('get-repo-package-json')
 
 function getNewVersion() {
     return new Promise((resolve, reject) => {
-        getPackage('https://github.com/Tolfx/Tolfx-Stats').then(pkg => { 
-            resolve(pkg)
-         })
+        if(!alreadyCheckedForVersion)
+        {
+            getPackage('https://github.com/Tolfx/Tolfx-Stats').then(pkg => { 
+                resolve(pkg)
+                alreadyCheckedForVersion = true
+            }).catch(e => {
+                resolve(false)
+            })
+        }
+        else
+        {
+            resolve(false)
+        }
     });
+
 }
 
 module.exports = {
