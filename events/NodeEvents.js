@@ -7,7 +7,7 @@ module.exports = function NodeEventListener()
     });
 
     process.on('unhandledRejection', (reason, promise) => {
-        log.error('Unhandled Rejection at: ' + promise + ' reason: ' + reason, log.trace());
+        log.error('Unhandled Rejection at: ' + JSON.stringify(promise) + ' reason: ' + reason, log.trace());
     });
 
     process.on('uncaughtExceptionMonitor', (err, origin) => {

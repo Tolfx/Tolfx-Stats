@@ -21,14 +21,14 @@
                       </tr>
                     </thead>
                     <tbody id="myTable">
-                      <tr>
-                        <% allUsers.forEach(user => { %>
-                            <td><%= user.username %></td>
-                            <td><%= user.role %></td>
-                            <td><%= user.email %></td>
-                            <td><%= user.joined.toLocaleDateString() %></td>
+                        <% allUsers.forEach(user => { %> 
+                            <tr>
+                                <td><%= user.username %></td>
+                                <td><%= user.role %></td>
+                                <td><%= user.email %></td>
+                                <td><%= user.joined.toLocaleDateString() %></td>
+                            </tr>
                         <% }) %>
-                      </tr>
                     </tbody>
                   </table>
             </div>
