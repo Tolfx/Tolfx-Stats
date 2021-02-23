@@ -80,10 +80,14 @@ app.use((req, res, next) => {
     res.locals.newVersion = '';
 
     getNewVersion().then(e => {
-        if(Version != e.version)
+        if(e)
         {
-            res.locals.newVersion = e.version;
+            if(Version != e.version)
+            {
+                res.locals.newVersion = e.version;
+            }
         }
+
         next();
     }).catch(e => {
         next()
