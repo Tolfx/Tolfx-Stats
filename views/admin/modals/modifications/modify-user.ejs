@@ -18,7 +18,7 @@
                                 <button
                                     data-dismiss="modal"
                                     class="btn btn-danger p-1"
-                                    onclick="modifyUser('<%= user.username %>', '<%= user.role %>', '<%= user.email %>')"
+                                    onclick="modifyUser('<%= user.username %>', '<%= user.role %>', '<%= general.roles.map(e => e.name) %>','<%= user.email %>')"
                                 >
                                     <%= user.username %>
                                 </button>
@@ -37,8 +37,20 @@
 
 <div id="divModifyUser"></div>
 <script>
-    function modifyUser(username, role, email)
+    function modifyUser(username, role, allRoles,email)
     {
+        allRoles = allRoles.split(",");
+        console.log(allRoles)
+        let roles = ''
+        allRoles.forEach(r => {
+            
+            if(r != role)
+            {
+                roles += `
+                <option>${r}</option>
+                `
+            }
+        });
         document.querySelector("#divModifyUser").innerHTML = `<div class="modal fade" id="modifyUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
         <div class="modal-content">
@@ -48,7 +60,7 @@
                 <span aria-hidden="true">&times;</span>
             </button>
             </div>
-            <form action="/admin/modify-user?_csrf=<%= _csrf %>" method="post">
+            <form action="/admin/modify-user/${username}?_csrf=<%= _csrf %>" method="post">
                 <div class="modal-body">
                     <div class="form m-2">
                         <label for="name">Username</label>
@@ -62,11 +74,7 @@
                         <label for="name">Role</label>
                         <select class="form-control" name="role">
                             <option>${role}</option>
-                            <% general.roles.forEach(role => { %>
-                                <% if(!role.name === general.user.role) { %>
-                                    <option><%= role.name %></option>
-                                <% } %>
-                            <% }) %>
+                                ${roles}
                           </select>
                     </div>
                 </div>

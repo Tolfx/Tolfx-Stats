@@ -370,4 +370,37 @@ router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
     }
 });
 
+router.post("/modify-user/:user", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+    let user = cleanQuery(req.params.user);
+    User.findOne({ username: user }).then(u => {
+        if(u)
+        {
+            let { email, newName, role } = req.body;
+
+            u.email = u.email != email ? email : u.email;
+            u.username = u.username != newName ? newName : u.username;
+            u.role = u.role != role ? role : u.role;
+            
+            u.save().then(() => {
+                log.info(`User: ${user} has neen modified.`)
+                req.flash("success_msg", "Changes has been made");
+                return res.redirect("back");
+            }).catch(e => {
+                log.error(e, log.trace());
+                req.flash("error_msg", "Something went wrong.. try again later.");
+                return res.redirect("back");
+            });
+        }
+        else
+        {
+            req.flash("error_msg", `Unable to find this user: ${user}`);
+            return res.redirect("back");
+        }
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
+    });
+});
+
 module.exports = router;
