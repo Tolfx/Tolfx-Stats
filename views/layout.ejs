@@ -129,7 +129,7 @@
 
                 function closeDragElement() {
                   /* stop moving when mouse button is released:*/
-                  fetch("/notis/save/<%= notis._id %>/pos/"+(elmnt.offsetLeft - pos1)+"/"+(elmnt.offsetTop - pos2), { method: "POST"});
+                  fetch("/notis/save/<%= notis._id %>/pos/"+(elmnt.offsetLeft - pos1)+"/"+(elmnt.offsetTop - pos2)+"?_csrf=<%= _csrf %>", { method: "POST"});
                   document.onmouseup = null;
                   document.onmousemove = null;
                 }
