@@ -1,5 +1,7 @@
 const Firewall = require("../../models/Firewall");
 const log = require("../../lib/Loggers");
+const { Request, Response } = require("request");
+const { blockedIps } = require("../../models/Firewall");
 
 /**
  * @description Contains all blocked IP's
@@ -141,7 +143,36 @@ function cacheNewData()
     });
 }
 
-const FireWall = {
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @param {*} next 
+ */
+function FireWall(req, res, next)
+{
+    let userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    if(blockedIp.includes(userIp))
+    {
+        if(!allowedIp.includes(userIp))
+        {
+            return res.render("partials/banned", {
+                ip: userIp,
+                general: res.general
+            });
+        }
+        else 
+        {
+            next();
+        }
+    }
+    else
+    {
+        next();
+    }
+}
+
+const F = {
     blockedIp,
     blockedNetwork,
     allowedNetwork,
@@ -150,7 +181,8 @@ const FireWall = {
     removeBlockedIp,
     allowIp,
     removeAllowedIp,
-    cacheNewData
+    cacheNewData,
+    FireWall
 }
 
-module.exports = FireWall;
+module.exports = F;

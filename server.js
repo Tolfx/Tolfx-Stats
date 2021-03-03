@@ -108,6 +108,9 @@ const limiter = rateLimit({
 
 app.use(limiter);
 
+// Firewall
+app.use(SetGeneral, require("./middlewares/Security/Firewall").FireWall);
+
 //Routers goes here
 app.use("/table", require("./routers/Table"));
 app.use("/notis", require("./routers/Notis"));
