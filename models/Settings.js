@@ -12,6 +12,16 @@ const SettingsSchema = new mongoose.Schema({
         default: ''
     },
 
+    autoBanOnFail: {
+        type: Boolean,
+        default: false
+    },
+
+    autoBanOnFailAttempts: {
+        type: Number,
+        default: 5
+    },
+
     name: {
         type: String,
         default: 'Tolfx Stats'
