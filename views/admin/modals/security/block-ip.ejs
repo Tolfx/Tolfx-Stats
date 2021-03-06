@@ -1,0 +1,26 @@
+
+<!-- Modal for blocking ip -->
+<div class="modal fade" id="blockIp" data-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Block an IP</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <form action="/admin/block-ip?_csrf=<%= _csrf %>" method="post">
+                <div class="modal-body">
+                    <div class="form m-2">
+                        <label for="name">IP</label>
+                        <input type="text" name="blockedIp" placeholder="192.168.1.1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
