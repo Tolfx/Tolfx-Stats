@@ -14,13 +14,16 @@ const upload = require("../lib/Storage");
 const { GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler");
 const fs = require("fs");
 const Log = require('../models/Logging');
+const { blockIp,  } = require("../middlewares/Security/Firewall")
+const FirewallModel = require("../models/Firewall");
 
 let G_WarnedLogo = false;
 
 router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (req, res) => {
     res.render("admin/main-admin", {
         general: res.general,
-        allUsers: await User.find()
+        allUsers: await User.find(),
+        blockedIps: await FirewallModel.blockedIps.find()
     });
 });
 
@@ -261,7 +264,7 @@ router.post("/remove-role", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAd
     }
 });
 
-router.post("/change-name", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+router.post("/change-name", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let newName = cleanQuery(req.body.name);
     if(newName)
     {
@@ -292,7 +295,7 @@ router.post("/change-name", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
     }
 });
 
-router.post("/change-url", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+router.post("/change-url", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let newUrl = cleanQuery(req.body.url);
     if(newUrl)
     {
@@ -323,7 +326,7 @@ router.post("/change-url", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin,
     }
 });
 
-router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, upload.single('file'), (req, res) => {
+router.post("/change-logo", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, upload.single('file'), (req, res) => {
     let newLogo = req.file;
     let regexImage = /jpeg|gif|jpg|jpeg|png/g;
     if(newLogo)
@@ -370,7 +373,7 @@ router.post("/change-logo", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin
     }
 });
 
-router.post("/modify-user/:user", CheckSetup, ensureIsAdmin, SetGeneral, ensureIsAdmin, (req, res) => {
+router.post("/modify-user/:user", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
     let user = cleanQuery(req.params.user);
     User.findOne({ username: user }).then(u => {
         if(u)
@@ -401,6 +404,81 @@ router.post("/modify-user/:user", CheckSetup, ensureIsAdmin, SetGeneral, ensureI
         req.flash("error_msg", "Something went wrong.. try again later.");
         return res.redirect("back");
     });
+});
+
+router.post("/block-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    let blockedIp = req.body.blockedIp;
+    if(blockedIp)
+    {
+        FirewallModel.blockedIps.findOne({ ip: blockedIp }).then(i => {
+            if(!i)
+            {
+                new FirewallModel.blockedIps({
+                    ip: blockedIp
+                }).save().then(() => {
+                    log.info(`Blocking a new IP: ${blockedIp}`);
+                    req.flash("success_msg", "Succesfully blocked IP.");
+                    return res.redirect("back");
+                }).catch(e => {
+                    log.error(e, log.trace());
+                    req.flash("error_msg", "Something went wrong when saving.. try again later.");
+                    return res.redirect("back");
+                })
+            }
+            else
+            {
+                //Already exisiting blocked IP.
+                req.flash("error_msg", "This IP has already been blocked.");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    }
+    else
+    {
+        //Nothing in body.
+        req.flash("error_msg", "Found no IP to block.");
+        return res.redirect("back");
+    }
+});
+
+router.post("/unblock-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    let blockedIp = req.body.blockedIp;
+    if(blockedIp)
+    {
+        FirewallModel.blockedIps.findOne({ ip: blockedIp }).then(i => {
+            if(i)
+            {
+                FirewallModel.blockedIps.deleteOne({ ip: blockedIp }).then(() => {
+                    log.info(`Unblocking IP: ${blockedIp}`);
+                    req.flash("success_msg", "Succesfully unblocked IP.");
+                    return res.redirect("back");
+                }).catch(e => {
+                    log.error(e, log.trace());
+                    req.flash("error_msg", "Something went wrong when removing.. try again later.");
+                    return res.redirect("back");
+                });
+            }
+            else
+            {
+                req.flash("error_msg", "Unable to find IP.");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    }
+    else
+    {
+        //Nothing in body.
+        req.flash("error_msg", "Found no IP to unblock.");
+        return res.redirect("back");
+    }
 });
 
 module.exports = router;
