@@ -14,7 +14,7 @@ const upload = require("../lib/Storage");
 const { GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler");
 const fs = require("fs");
 const Log = require('../models/Logging');
-const { blockIp,  } = require("../middlewares/Security/Firewall")
+const { blockIp, removeBlockedIp } = require("../middlewares/Security/Firewall")
 const FirewallModel = require("../models/Firewall");
 
 let G_WarnedLogo = false;
@@ -413,6 +413,7 @@ router.post("/block-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin
         FirewallModel.blockedIps.findOne({ ip: blockedIp }).then(i => {
             if(!i)
             {
+                blockIp(blockedIp);
                 new FirewallModel.blockedIps({
                     ip: blockedIp
                 }).save().then(() => {
@@ -452,6 +453,7 @@ router.post("/unblock-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdm
         FirewallModel.blockedIps.findOne({ ip: blockedIp }).then(i => {
             if(i)
             {
+                removeBlockedIp(blockedIp)
                 FirewallModel.blockedIps.deleteOne({ ip: blockedIp }).then(() => {
                     log.info(`Unblocking IP: ${blockedIp}`);
                     req.flash("success_msg", "Succesfully unblocked IP.");
