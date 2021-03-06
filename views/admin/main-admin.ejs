@@ -11,6 +11,7 @@
         <a class="btn btn-block btn-info" href="/admin/logs?page=1">Logs</a>
         <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewUser">View all users</button>
         <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewRole">View all roles</button>
+        <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewBlockedIps">View all blocked IPs</button>
     </div>
 
     <div class="rounded bg-primary shadow p-2 mt-3">
@@ -21,6 +22,12 @@
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeUser">Remove user</button>
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeRole">Remove role</button>
     </div>
+
+    <div class="rounded bg-primary shadow p-2 mt-3">
+        <h2 class="text-center">Security commands</h2>
+        <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#blockIp">Block IP</button>
+        <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#unblockIp">Unblock IP</button>
+    </div>
 </div>
 
 <%- include("./modals/general/new-role")  %>
@@ -28,9 +35,13 @@
 
 <%- include("./modals/view/view-users")  %>
 <%- include("./modals/view/view-role")  %>
+<%- include("./modals/view/view-blocked-ips")  %>
 
 <%- include("./modals/modifications/rename-name")  %>
 <%- include("./modals/modifications/change-logo")  %>
 <%- include("./modals/modifications/modify-user")  %>
 <%- include("./modals/modifications/remove-role")  %>
 <%- include("./modals/modifications/remove-user")  %>
+
+<%- include("./modals/security/block-ip")  %>
+<%- include("./modals/security/unblock-ip")  %>
