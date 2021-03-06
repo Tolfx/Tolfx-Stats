@@ -111,6 +111,9 @@ app.use(limiter);
 // Firewall
 app.use(SetGeneral, require("./middlewares/Security/Firewall").FireWall);
 
+// Autoban
+app.use(SetGeneral, require("./middlewares/Security/AutoBan"));
+
 //Routers goes here
 app.use("/table", require("./routers/Table"));
 app.use("/notis", require("./routers/Notis"));
