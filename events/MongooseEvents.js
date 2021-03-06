@@ -1,4 +1,5 @@
 const log = require("../lib/Loggers");
+const { cacheNewData } = require("../middlewares/Security/Firewall");
 
 module.exports = (db) => 
 {
@@ -16,5 +17,12 @@ module.exports = (db) =>
 
     db.once('open', () => {
         log.info("Connected to database");
+
+        /**
+         * Cache new data here
+         * for IPs and networks.
+         */
+        log.info("Caching new data for IP's");
+        cacheNewData();
     });
 }
