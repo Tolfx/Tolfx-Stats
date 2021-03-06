@@ -1,7 +1,6 @@
 const Firewall = require("../../models/Firewall");
 const log = require("../../lib/Loggers");
 const { Request, Response } = require("request");
-const { blockedIps } = require("../../models/Firewall");
 
 /**
  * @description Contains all blocked IP's
@@ -30,11 +29,6 @@ let allowedNetwork = [];
 function blockIp(ip)
 {
     blockedIp.push(ip);
-    new Firewall.blockedIps({
-        ip
-    }).save().catch(e => {
-        log.error(e, log.trace())
-    });
 }
 
 /**
@@ -48,7 +42,6 @@ function removeBlockedIp(ip)
     if(index > -1)
     {
         blockedIp.slice(index, 1);
-        Firewall.blockedIps.deleteOne({ ip });
         return true;
     }
     else { return false; }
@@ -61,12 +54,6 @@ function removeBlockedIp(ip)
 function allowIp(ip)
 {
     allowedIp.push(ip);
-    new Firewall.allowedIps({
-        ip
-    }).save().catch(e => {
-        log.error(e, log.trace());
-        return false;
-    });
 }
 
 /**
@@ -80,7 +67,6 @@ function removeAllowedIp(ip)
     if(index > -1)
     {
         allowedIp.slice(index, 1);
-        Firewall.allowedIps.deleteOne({ ip })
         return true;
     }
     else { return false; }
@@ -96,11 +82,6 @@ function allowNetwork(network)
     if(network.match(regexIpv4))
     {
         allowedNetwork.push(network);
-        new Firewall.allowedNetworks({
-            network
-        }).save().catch(e => {
-            log.error(e, log.trace());
-        });
         return true;
     }
     else
@@ -143,6 +124,8 @@ function cacheNewData()
     });
 }
 
+let attemptsToView = [];
+
 /**
  * 
  * @param {Request} req 
@@ -156,7 +139,23 @@ function FireWall(req, res, next)
     {
         if(!allowedIp.includes(userIp))
         {
-            return res.render("partials/banned", {
+            let indexOf = attemptsToView.findIndex(e => e.ip === userIp);
+            if(indexOf > -1)
+            {
+                attemptsToView[indexOf].attempts++;
+                if((attemptsToView[indexOf].attempts % 5) == 0)
+                {
+                    log.warning(`IP: ${userIp} has attempted: ${attemptsToView[indexOf].attempts} times, even if blocked.`)
+                }
+            }
+            else
+            {
+                attemptsToView.push({
+                    ip: userIp,
+                    attempts: 0
+                });
+            }
+            return res.status(403).render("partials/banned", {
                 ip: userIp,
                 general: res.general
             });
