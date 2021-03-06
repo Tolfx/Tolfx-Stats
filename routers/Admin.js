@@ -483,4 +483,49 @@ router.post("/unblock-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdm
     }
 });
 
+router.post("/enable-autoban", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Settings.find().then(s => {
+        s = s[0];
+        s.autoBanOnFail = true;
+        s.save().then(() => {
+            req.flash("success_msg", "AutoBan enabled.");
+            return res.redirect("back");
+        });
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
+    })
+});
+
+router.post("/disable-autoban", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Settings.find().then(s => {
+        s = s[0];
+        s.autoBanOnFail = false;
+        s.save().then(() => {
+            req.flash("success_msg", "AutoBan disabled.");
+            return res.redirect("back");
+        });
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
+    })
+});
+
+router.post("/autoban-attempts", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Settings.find().then(s => {
+        s = s[0];
+        s.autoBanOnFailAttempts = parseInt(req.body.attempts);
+        s.save().then(() => {
+            req.flash("success_msg", "AutoBan enabled.");
+            return res.redirect("back");
+        });
+    }).catch(e => {
+        log.error(e, log.trace());
+        req.flash("error_msg", "Something went wrong.. try again later.");
+        return res.redirect("back");
+    })
+});
+
 module.exports = router;
