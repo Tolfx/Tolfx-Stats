@@ -13,7 +13,11 @@
                 <div class="modal-body">
                     <div class="form m-2">
                         <label for="name">IP</label>
-                        <input type="text" name="blockedIp" placeholder="192.168.1.1">
+                        <select class="form-control" name="blockedIp">
+                            <% blockedIps.forEach(ip => { %>
+                                <option><%= ip.ip %></option>
+                            <% }) %>
+                        </select>
                     </div>
                 </div>
                 <div class="modal-footer">
