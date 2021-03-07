@@ -81,6 +81,10 @@ app.use((req, res, next) => {
 
     res.locals.PORT = Port;
 
+    res.locals.isProd = is_prod;
+
+    res.locals.Domain = process.env.DOMAIN;
+
     getNewVersion().then(e => {
         if(e)
         {
