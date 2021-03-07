@@ -23,9 +23,15 @@ function cacheNewSettings()
 module.exports = (req, res, next) => {
     cacheNewSettings().then(settings => {
         let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-        if(settings[0].autoBanOnFail && !Firewall.allowedIp.includes(userIp))
+        if(
+            settings[0].autoBanOnFail && 
+            !Firewall.allowedIp.includes(userIp)
+        )
         {
-            if(!req.isAuthenticated() && req.originalUrl != "/")
+            if(
+                !req.isAuthenticated() && 
+                !req.originalUrl.match(/login|\/admin\/logo|\//g)
+            )
             {
                 let indexOf = failedAttempts.findIndex(e => e.ip === userIp);
                 if(indexOf > -1)
