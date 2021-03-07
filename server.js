@@ -12,7 +12,7 @@ const { ensureIsLoggedIn } = require("./configs/Authenticate");
 const rateLimit = require("express-rate-limit");
 const csrf = require("csurf");
 const cookieParser = require('cookie-parser');
-const { Version, getNewVersion } = require("./Config");
+const { Version, getNewVersion, Port } = require("./Config");
 
 const is_prod = process.env.ISPROD === "true" ? true : false;
 const app = express();
@@ -78,6 +78,8 @@ app.use((req, res, next) => {
     res.locals.version = Version;
 
     res.locals.newVersion = '';
+
+    res.locals.PORT = Port;
 
     getNewVersion().then(e => {
         if(e)

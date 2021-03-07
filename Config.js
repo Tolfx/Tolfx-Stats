@@ -2,6 +2,7 @@ const fs = require('fs');
 const request = require('request');
 
 const Version = (JSON.parse(fs.readFileSync("./package.json"))).version;
+const Port = process.env.PORT;
 let alreadyCheckedForVersion = false;
 const getPackage = require('get-repo-package-json')
 
@@ -26,5 +27,6 @@ function getNewVersion() {
 
 module.exports = {
     Version,
+    Port,
     getNewVersion
 } 

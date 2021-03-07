@@ -213,7 +213,7 @@
     </div>
     <% if (general.isAuth) { %>
       <script defer>
-        const socket = io("http://localhost:5621");
+        const socket = io("http://localhost:<%= PORT %>");
         socket.on('system', (system) => {
           system = JSON.parse(system)
           document.querySelector("#CPU").innerText = system.CPU + "%";
