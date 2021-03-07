@@ -1,7 +1,4 @@
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-}
-
+require('dotenv').config();
 const mongoose = require('mongoose');
 const express = require('express');
 const expressLayouts = require('express-ejs-layouts');
@@ -11,7 +8,7 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 const log = require("./lib/Loggers");
 const { SetGeneral } = require("./middlewares/Main");
-const { ensureIsLoggedIn, ensureIsAdmin } = require("./configs/Authenticate");
+const { ensureIsLoggedIn } = require("./configs/Authenticate");
 const rateLimit = require("express-rate-limit");
 const csrf = require("csurf");
 const cookieParser = require('cookie-parser');
@@ -19,6 +16,7 @@ const { Version, getNewVersion } = require("./Config");
 
 const is_prod = process.env.ISPROD === "true" ? true : false;
 const app = express();
+require('express-ws')(app);
 
 require("./configs/Passport")(passport);
 
@@ -41,20 +39,22 @@ app.use(methodOverride('_method'));
 // Express body parser
 app.use(express.urlencoded({ extended: true }));
 
+let sessionMiddleWare = session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        path: "/",
+        maxAge: 24*60*60*1000,
+        domain: is_prod ? process.env.DOMAIN : '',
+        //secure: is_prod,
+        sameSite: is_prod ? 'strict' : false,
+    }
+})
+
 // Session
 app.use(
-    session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            path: "/",
-            maxAge: 24*60*60*1000,
-            domain: is_prod ? process.env.DOMAIN : '',
-            //secure: is_prod,
-            sameSite: is_prod ? 'strict' : false,
-        }
-    })
+    sessionMiddleWare
 );
 
 // Passport middleware
@@ -114,18 +114,18 @@ app.use(SetGeneral, require("./middlewares/Security/Firewall").FireWall);
 // Autoban
 app.use(SetGeneral, require("./middlewares/Security/AutoBan"));
 
-//Routers goes here
+// Routers goes here
 app.use("/table", require("./routers/Table"));
 app.use("/notis", require("./routers/Notis"));
 app.use("/explorer", require("./routers/Explorer"));
 app.use("/admin", require("./routers/Admin"));
 
-//This route has to be on the lowest, otherwise epic fail.
+// This route has to be on the lowest, otherwise epic fail.
 app.use("/", require("./routers/Main"));
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
+const server = app.listen(PORT, log.verbos(`Server started on port ${PORT}`));
 
 app.get('*', SetGeneral, ensureIsLoggedIn, (req, res) => {
     res.status(404).render('partials/notFound', {
@@ -133,7 +133,7 @@ app.get('*', SetGeneral, ensureIsLoggedIn, (req, res) => {
     });
 });
 
-//Check if any new updates
+// Check if any new updates
 getNewVersion().then(e => {
     if(e)
     {
@@ -144,7 +144,7 @@ getNewVersion().then(e => {
     }
 });
 
-//If in a github action.. exit after 1 min.
+// If in a github action.. exit after 1 min.
 if(process.env.GITHUB_ACTION)
 {
     setTimeout(() => {
@@ -152,6 +152,17 @@ if(process.env.GITHUB_ACTION)
     }, 60000) // <--- 1 min
 }
 
-//Load events here.
+// Socket
+require("socket.io")(server)
+    .use((socket, next) => {
+        sessionMiddleWare(socket.request, {}, next);
+    })
+    .on("connection", (socket) => {
+        // socket.request
+        // Sockets goes here?
+        require("./sockets/System")(socket)
+    });
+
+// Load events here.
 require("./events/NodeEvents")();
 require("./events/MongooseEvents")(db);
