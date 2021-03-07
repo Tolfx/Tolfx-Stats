@@ -1,7 +1,7 @@
 module.exports = (socket) => {
     if(typeof socket.request.session.passport != "undefined")
     {
-        if(typeof socket.request.session.passport?.user != "undefined")
+        if(typeof socket.request.session.passport.user != "undefined")
         {
             let interval = setInterval(() => {
                 //Needs more work..
