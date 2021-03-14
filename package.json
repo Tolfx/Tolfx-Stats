@@ -1,6 +1,6 @@
 {
   "name": "Tolfx-Stats",
-  "version": "1.8.9",
+  "version": "1.9.3",
   "description": "",
   "main": "server.js",
   "scripts": {
@@ -28,6 +28,7 @@
     "get-repo-package-json": "^2.0.0",
     "gridfs-stream": "^1.1.1",
     "install": "^0.13.0",
+    "ip-subnet-calculator": "^1.1.8",
     "jsdom": "^16.4.0",
     "marked": "^2.0.0",
     "method-override": "^3.0.0",
