@@ -14,6 +14,7 @@
         <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewRole">View all roles</button>
         <hr>
         <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewBlockedIps">View all blocked IPs</button>
+        <button class="btn btn-block btn-info" data-toggle="modal" data-target="#viewAllowedIps">View all allowed IPs</button>
     </div>
 
     <div class="rounded bg-primary shadow p-2 mt-3">
@@ -34,6 +35,11 @@
         <% } else { %>
             <button class="btn btn-block btn-success" data-toggle="modal" data-target="#enableAutoBan">Enable AutoBan</button>
         <% } %> 
+        <% if (general.settings[0].onlyAllowedIp) { %>
+            <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#disableWhitelist">Disable Whitelist</button>
+        <% } else { %>
+            <button class="btn btn-block btn-success" data-toggle="modal" data-target="#enableWhitelist">Enable Whitelist</button>
+        <% } %> 
         <hr>
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#blockIp">Block IP</button>
         <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#unblockIp">Unblock IP</button>
@@ -46,6 +52,7 @@
 <%- include("./modals/view/view-users")  %>
 <%- include("./modals/view/view-role")  %>
 <%- include("./modals/view/view-blocked-ips")  %>
+<%- include("./modals/view/view-allowed-ips")  %>
 
 <%- include("./modals/modifications/rename-name")  %>
 <%- include("./modals/modifications/change-logo")  %>
@@ -57,6 +64,11 @@
     <%- include("./modals/security/disable-autoban") %>
 <% } else { %>    
     <%- include("./modals/security/enable-autoban")  %>
+<% } %>
+<% if (general.settings[0].onlyAllowedIp) { %>
+    <%- include("./modals/security/disable-whitelist")  %>
+<% } else { %>
+    <%- include("./modals/security/enable-whitelist")  %>
 <% } %> 
 <%- include("./modals/security/block-ip")  %>
 <%- include("./modals/security/unblock-ip")  %>
