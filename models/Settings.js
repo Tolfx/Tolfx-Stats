@@ -22,6 +22,11 @@ const SettingsSchema = new mongoose.Schema({
         default: 5
     },
 
+    onlyAllowedIp: {
+        type: Boolean,
+        default: false
+    },
+
     name: {
         type: String,
         default: 'Tolfx Stats'
