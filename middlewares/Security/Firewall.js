@@ -136,7 +136,7 @@ async function cacheNewSettings() {
     setInterval(() => {
         cacheNewSettings()
     }, 100000)
-});
+})();
 
 let attemptsToView = [];
 
@@ -187,6 +187,7 @@ function doGeneral(req, res, next)
  */
 function FireWall(req, res, next)
 {
+    console.log(settings)
     if(settings)
     {
         if(settings.onlyAllowedIp)
