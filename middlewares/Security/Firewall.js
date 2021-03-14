@@ -1,6 +1,9 @@
 const Firewall = require("../../models/Firewall");
 const log = require("../../lib/Loggers");
 const { Request, Response } = require("request");
+const Settings = require("../../models/Settings");
+
+let settings;
 
 /**
  * @description Contains all blocked IP's
@@ -124,17 +127,22 @@ function cacheNewData()
     });
 }
 
+async function cacheNewSettings() {
+    settings = (await Settings.find())[0];
+};
+
+(async () => {
+    await cacheNewSettings()
+    setInterval(() => {
+        cacheNewSettings()
+    }, 100000)
+});
+
 let attemptsToView = [];
 
-/**
- * 
- * @param {Request} req 
- * @param {Response} res 
- * @param {*} next 
- */
-function FireWall(req, res, next)
+function doGeneral(req, res, next)
 {
-    let userIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     if(blockedIp.includes(userIp))
     {
         if(!allowedIp.includes(userIp))
@@ -168,6 +176,42 @@ function FireWall(req, res, next)
     else
     {
         next();
+    }
+}
+
+/**
+ * 
+ * @param {Request} req 
+ * @param {Response} res 
+ * @param {*} next 
+ */
+function FireWall(req, res, next)
+{
+    if(settings)
+    {
+        if(settings.onlyAllowedIp)
+        {
+            let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+            if(!allowedIp.includes(userIp))
+            {
+                return res.status(403).render("partials/banned", {
+                    ip: userIp,
+                    general: res.general
+                });
+            }
+            else
+            {
+                next()
+            }
+        }
+        else
+        {
+            doGeneral(req, res, next);
+        }
+    }
+    else
+    {
+        doGeneral(req, res, next);
     }
 }
 
