@@ -14,7 +14,7 @@ const upload = require("../lib/Storage");
 const { GFS_DisplayImage, GFS_Remove } = require("../lib/FilesHandler");
 const fs = require("fs");
 const Log = require('../models/Logging');
-const { blockIp, removeBlockedIp } = require("../middlewares/Security/Firewall")
+const { blockIp, removeBlockedIp, allowIp, removeAllowedIp } = require("../middlewares/Security/Firewall")
 const FirewallModel = require("../models/Firewall");
 
 let G_WarnedLogo = false;
@@ -23,7 +23,8 @@ router.get("/", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, async (
     res.render("admin/main-admin", {
         general: res.general,
         allUsers: await User.find(),
-        blockedIps: await FirewallModel.blockedIps.find()
+        blockedIps: await FirewallModel.blockedIps.find(),
+        allowedIps: await FirewallModel.allowedIps.find()
     });
 });
 
@@ -526,6 +527,114 @@ router.post("/autoban-attempts", CheckSetup, ensureIsLoggedIn, SetGeneral, ensur
         req.flash("error_msg", "Something went wrong.. try again later.");
         return res.redirect("back");
     })
+});
+
+router.post("/allow-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    let allowedIp = req.body.ip;
+    if(allowedIp)
+    {
+        FirewallModel.allowedIps.findOne({ ip: allowedIp }).then(i => {
+            if(!i)
+            {
+                new FirewallModel.allowedIps({
+                    ip: allowedIp
+                }).save().then(() => {
+                    allowIp(allowedIp)
+                    req.flash("success_msg", "Ip whitelisted!");
+                    return res.redirect("back");
+                }).catch(e => {
+                    log.error(e, log.trace());
+                    req.flash("error_msg", "Something went wrong.. try again later.");
+                    return res.redirect("back"); 
+                })
+            }
+            else
+            {
+                req.flash("error_msg", "This IP is already in the whitelist.");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        }) 
+    }
+    else
+    {
+        //Nothing in body.
+        req.flash("error_msg", "Found no IP to allow.");
+        return res.redirect("back");
+    }
+});
+
+router.post("/remove-allow-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    let allowedIp = req.body.ip;
+    if(allowedIp)
+    {
+        FirewallModel.allowedIps.findOne({ ip: allowedIp }).then(i => {
+            if(!i)
+            {
+                FirewallModel.allowedIps.deleteOne({ ip: allowedIp }).then(() => {
+                    req.flash("success_msg", "Ip removed from whitelist!");
+                    return res.redirect("back");
+                }).catch(e => {
+                    log.error(e, log.trace());
+                    req.flash("error_msg", "Something went wrong.. try again later.");
+                    return res.redirect("back"); 
+                })
+            }
+            else
+            {
+                req.flash("error_msg", "No IP found to remove.");
+                return res.redirect("back");
+            }
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        }) 
+    }
+    else
+    {
+        //Nothing in body.
+        req.flash("error_msg", "Found no IP to remove.");
+        return res.redirect("back");
+    }
+});
+
+router.post("/only-allow-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Settings.find().then(s => {
+        s = s[0];
+        s.onlyAllowedIp = true;
+        s.save().then(() => {
+            let userIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+            new FirewallModel.allowedIps({
+                ip: userIp
+            }).save();
+            allowIp(userIp)
+            req.flash("success_msg", "Only whitelisted IP's allowed!");
+            return res.redirect("back");
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    });
+});
+
+router.post("/disable-only-allow-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensureIsAdmin, (req, res) => {
+    Settings.find().then(s => {
+        s = s[0];
+        s.onlyAllowedIp = false;
+        s.save().then(() => {
+            req.flash("success_msg", "Disabled only whitelisted IP's allowed.");
+            return res.redirect("back");
+        }).catch(e => {
+            log.error(e, log.trace());
+            req.flash("error_msg", "Something went wrong.. try again later.");
+            return res.redirect("back");
+        })
+    });
 });
 
 module.exports = router;
