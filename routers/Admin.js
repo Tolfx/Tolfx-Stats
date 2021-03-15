@@ -572,7 +572,7 @@ router.post("/remove-allow-ip", CheckSetup, ensureIsLoggedIn, SetGeneral, ensure
     if(allowedIp)
     {
         FirewallModel.allowedIps.findOne({ ip: allowedIp }).then(i => {
-            if(!i)
+            if(i)
             {
                 FirewallModel.allowedIps.deleteOne({ ip: allowedIp }).then(() => {
                     req.flash("success_msg", "Ip removed from whitelist!");
