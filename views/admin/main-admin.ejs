@@ -43,6 +43,9 @@
         <hr>
         <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#blockIp">Block IP</button>
         <button class="btn btn-block btn-warning" data-toggle="modal" data-target="#unblockIp">Unblock IP</button>
+        <hr>
+        <button class="btn btn-block btn-success" data-toggle="modal" data-target="#allowIp">Allow IP</button>
+        <button class="btn btn-block btn-danger" data-toggle="modal" data-target="#removeAllowedIp">Remove allowed IP</button>
     </div>
 </div>
 
@@ -72,3 +75,5 @@
 <% } %> 
 <%- include("./modals/security/block-ip")  %>
 <%- include("./modals/security/unblock-ip")  %>
+<%- include("./modals/security/allow-ip")  %>
+<%- include("./modals/security/remove-allowed-ip")  %>
